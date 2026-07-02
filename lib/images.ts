@@ -35,6 +35,7 @@ export function getExerciseImageFallbacks(name: string): string[] {
     urls.push(`${FREE_EXERCISE_DB_RAW}/${slug2}/0.jpg`);
     urls.push(`${FREE_EXERCISE_DB_RAW}/${slug2}/1.jpg`);
   }
+  urls.push(`/api/media?name=${encodeURIComponent(name)}`);
   return urls;
 }
 
