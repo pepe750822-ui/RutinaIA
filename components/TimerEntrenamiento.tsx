@@ -14,6 +14,7 @@ interface Props {
 }
 
 type Fase = "preparacion" | "ejercicio" | "registro" | "descanso"
+type ModoFlujo = "calentamiento" | "rutina" | "cardio_final" | "enfriamiento"
 
 const FASE_LABEL: Record<Fase, string> = {
   preparacion: "Preparación",
@@ -25,12 +26,27 @@ const FASE_LABEL: Record<Fase, string> = {
 const RPE_BUTTONS = [6, 7, 8, 9, 10]
 const PREP_SECONDS = 10
 
+const OPCIONES_CALENTAMIENTO = [
+  { label: "Caminadora", minutos: 10 },
+  { label: "Bicicleta fija", minutos: 15 },
+  { label: "Elíptica", minutos: 15 },
+  { label: "Saltar cuerda", minutos: 5 },
+]
+
+const OPCIONES_CARDIO = [
+  { label: "HIIT Caminadora", minutos: 20 },
+  { label: "HIIT Elíptica", minutos: 25 },
+  { label: "Cardio moderado", minutos: 30 },
+  { label: "Bicicleta fija", minutos: 20 },
+]
+
 export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
+  const [modoFlujo, setModoFlujo] = useState<ModoFlujo>("calentamiento")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [fase, setFase] = useState<Fase>("preparacion")
-  const [timeLeft, setTimeLeft] = useState(PREP_SECONDS)
-  const [maxTime, setMaxTime] = useState(PREP_SECONDS)
-  const [isRunning, setIsRunning] = useState(true)
+  const [timeLeft, setTimeLeft] = useState(0)
+  const [maxTime, setMaxTime] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
   const [completed, setCompleted] = useState(false)
   const [imgSrc, setImgSrc] = useState<string | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
@@ -40,6 +56,9 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const [logPeso, setLogPeso] = useState(0)
   const [logReps, setLogReps] = useState(0)
   const [logRpe, setLogRpe] = useState(6)
+  const [opcionCalentamiento, setOpcionCalentamiento] = useState<number | null>(null)
+  const [opcionCardio, setOpcionCardio] = useState<number | null>(null)
+  const [enfriamientoIniciado, setEnfriamientoIniciado] = useState(false)
 
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
@@ -52,7 +71,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     setIsRunning(true)
   }, [])
 
-  // Create session on mount
   useEffect(() => {
     async function init() {
       const supabase = getSupabaseBrowserClient()
@@ -70,6 +88,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   }, [])
 
   useEffect(() => {
+    if (modoFlujo !== "rutina") return
     if (current) {
       goToFase("preparacion", PREP_SECONDS)
       setVideoSrc(null)
@@ -89,7 +108,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         })
         .catch(() => {})
     }
-  }, [currentIndex, current, goToFase])
+  }, [currentIndex, current, goToFase, modoFlujo])
 
   useEffect(() => {
     if (!isRunning || timeLeft <= 0) return
@@ -97,7 +116,9 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     return () => clearInterval(id)
   }, [isRunning, timeLeft])
 
+  // Fin de timer para la rutina
   useEffect(() => {
+    if (modoFlujo !== "rutina") return
     if (timeLeft > 0) return
     setIsRunning(false)
     if (fase === "preparacion") {
@@ -111,12 +132,19 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         if (currentIndex < total - 1) {
           setCurrentIndex((i) => i + 1)
         } else {
-          setCompleted(true)
-          onComplete(sesionId ?? undefined)
+          setIsRunning(false)
+          setTimeLeft(0)
+          setModoFlujo("cardio_final")
         }
       }
     }
-  }, [timeLeft, fase, currentIndex, total, current, goToFase, onComplete, setsCount, setsLog.length, sesionId])
+  }, [timeLeft, fase, currentIndex, total, current, goToFase, setsCount, setsLog.length, modoFlujo])
+
+  // Fin de timer para fases extra (solo para)
+  useEffect(() => {
+    if (modoFlujo === "rutina") return
+    if (timeLeft <= 0 && isRunning) setIsRunning(false)
+  }, [timeLeft, isRunning, modoFlujo])
 
   const guardarSet = async () => {
     if (!sesionId) return
@@ -161,14 +189,35 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     setLogPeso((p) => Math.max(0, p + delta))
   }
 
-  // SVG circular timer
+  const startCalentamientoTimer = (idx: number) => {
+    setOpcionCalentamiento(idx)
+    const secs = OPCIONES_CALENTAMIENTO[idx].minutos * 60
+    setTimeLeft(secs)
+    setMaxTime(secs)
+    setIsRunning(true)
+  }
+
+  const startCardioTimer = (idx: number) => {
+    setOpcionCardio(idx)
+    const secs = OPCIONES_CARDIO[idx].minutos * 60
+    setTimeLeft(secs)
+    setMaxTime(secs)
+    setIsRunning(true)
+  }
+
+  const startEnfriamientoTimer = () => {
+    setEnfriamientoIniciado(true)
+    setTimeLeft(5 * 60)
+    setMaxTime(5 * 60)
+    setIsRunning(true)
+  }
+
   const RADIUS = 80
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS
   const progress = maxTime > 0 ? timeLeft / maxTime : 0
   const dashOffset = CIRCUMFERENCE * (1 - progress)
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
-  const timerColor = fase === "descanso" ? "#0066ff" : "#00ff88"
 
   if (completed) {
     return (
@@ -176,13 +225,198 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200 }}>
           <CheckCircle className="w-20 h-20 text-[#00ff88] mx-auto" />
         </motion.div>
+        <div className="text-5xl">🏆</div>
         <h2 className="text-2xl font-bold text-white">¡Entrenamiento completado!</h2>
         <p className="text-white/50">Excelente trabajo. Sigue así.</p>
       </div>
     )
   }
 
+  // ── CALENTAMIENTO ──────────────────────────────────────────────────────
+  if (modoFlujo === "calentamiento") {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div key="calentamiento" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-bold text-white">🔥 Calentamiento</h2>
+            <p className="text-sm text-white/50">Elige una opción para comenzar</p>
+          </div>
+
+          {opcionCalentamiento === null ? (
+            <div className="space-y-3">
+              {OPCIONES_CALENTAMIENTO.map((op, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => startCalentamientoTimer(idx)}
+                  className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#ff6b35]/50 rounded-2xl px-5 py-4 transition-all"
+                >
+                  <span className="text-white font-medium">{op.label}</span>
+                  <span className="text-[#ff6b35] font-bold text-sm">{op.minutos} min</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <p className="text-center text-[#ff6b35] font-semibold">{OPCIONES_CALENTAMIENTO[opcionCalentamiento].label}</p>
+              <div className="flex items-center justify-center">
+                <div className="relative w-[200px] h-[200px]">
+                  <svg width="200" height="200" viewBox="0 0 200 200" className="-rotate-90 absolute inset-0">
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="#ff6b35" strokeWidth="10"
+                      strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset}
+                      className="transition-all duration-1000" style={{ filter: "drop-shadow(0 0 10px #ff6b3580)" }} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl font-bold tabular-nums text-[#ff6b35]">
+                      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                    </span>
+                    <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Calentamiento</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button variant="outline" size="icon" onClick={() => setIsRunning((p) => !p)}
+                  className="w-16 h-16 rounded-full border-[#ff6b35]/30 bg-[#ff6b35]/10 hover:bg-[#ff6b35]/20">
+                  {isRunning ? <Pause className="w-6 h-6 text-[#ff6b35]" /> : <Play className="w-6 h-6 text-[#ff6b35]" />}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => { setIsRunning(false); setModoFlujo("rutina") }}
+            className="w-full h-12 rounded-xl bg-[#00ff88] text-[#0a0f1e] font-bold text-base hover:bg-[#00ff88]/90"
+          >
+            ✓ Calentamiento listo, empezar rutina
+          </Button>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
+
+  // ── CARDIO FINAL ───────────────────────────────────────────────────────
+  if (modoFlujo === "cardio_final") {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div key="cardio_final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-bold text-white">🏃 Cardio de Cierre</h2>
+            <p className="text-sm text-white/50">Elige una opción de cardio</p>
+          </div>
+
+          {opcionCardio === null ? (
+            <div className="space-y-3">
+              {OPCIONES_CARDIO.map((op, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => startCardioTimer(idx)}
+                  className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#00ff88]/50 rounded-2xl px-5 py-4 transition-all"
+                >
+                  <span className="text-white font-medium">{op.label}</span>
+                  <span className="text-[#00ff88] font-bold text-sm">{op.minutos} min</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <p className="text-center text-[#00ff88] font-semibold">{OPCIONES_CARDIO[opcionCardio].label}</p>
+              <div className="flex items-center justify-center">
+                <div className="relative w-[200px] h-[200px]">
+                  <svg width="200" height="200" viewBox="0 0 200 200" className="-rotate-90 absolute inset-0">
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="#00ff88" strokeWidth="10"
+                      strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset}
+                      className="transition-all duration-1000" style={{ filter: "drop-shadow(0 0 10px #00ff8880)" }} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl font-bold tabular-nums text-[#00ff88]">
+                      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                    </span>
+                    <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Cardio Final</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button variant="outline" size="icon" onClick={() => setIsRunning((p) => !p)}
+                  className="w-16 h-16 rounded-full border-[#00ff88]/30 bg-[#00ff88]/10 hover:bg-[#00ff88]/20">
+                  {isRunning ? <Pause className="w-6 h-6 text-[#00ff88]" /> : <Play className="w-6 h-6 text-[#00ff88]" />}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => { setIsRunning(false); setModoFlujo("enfriamiento") }}
+            className="w-full h-12 rounded-xl bg-[#00ff88] text-[#0a0f1e] font-bold text-base hover:bg-[#00ff88]/90"
+          >
+            ✓ Cardio listo, finalizar
+          </Button>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
+
+  // ── ENFRIAMIENTO ───────────────────────────────────────────────────────
+  if (modoFlujo === "enfriamiento") {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div key="enfriamiento" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-bold text-white">❄️ Enfriamiento</h2>
+            <p className="text-sm text-white/50">Estiramientos sugeridos · 5 minutos</p>
+          </div>
+
+          {!enfriamientoIniciado ? (
+            <div className="bg-white/5 rounded-2xl p-5 space-y-4 text-center">
+              <p className="text-white/70 text-sm">
+                Realiza estiramientos generales durante 5 minutos para recuperarte adecuadamente.
+              </p>
+              <Button onClick={startEnfriamientoTimer}
+                className="w-full h-11 rounded-xl bg-[#00ccff] text-[#0a0f1e] font-bold hover:bg-[#00ccff]/90">
+                Iniciar timer de 5 min
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <div className="flex items-center justify-center">
+                <div className="relative w-[200px] h-[200px]">
+                  <svg width="200" height="200" viewBox="0 0 200 200" className="-rotate-90 absolute inset-0">
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
+                    <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="#00ccff" strokeWidth="10"
+                      strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset}
+                      className="transition-all duration-1000" style={{ filter: "drop-shadow(0 0 10px #00ccff80)" }} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-4xl font-bold tabular-nums text-[#00ccff]">
+                      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                    </span>
+                    <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">Enfriamiento</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button variant="outline" size="icon" onClick={() => setIsRunning((p) => !p)}
+                  className="w-16 h-16 rounded-full border-[#00ccff]/30 bg-[#00ccff]/10 hover:bg-[#00ccff]/20">
+                  {isRunning ? <Pause className="w-6 h-6 text-[#00ccff]" /> : <Play className="w-6 h-6 text-[#00ccff]" />}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => { setCompleted(true); onComplete(sesionId ?? undefined) }}
+            className="w-full h-12 rounded-xl bg-[#00ff88] text-[#0a0f1e] font-bold text-base hover:bg-[#00ff88]/90"
+          >
+            ✓ Finalizar entrenamiento
+          </Button>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
+
+  // ── RUTINA (ejercicios) ────────────────────────────────────────────────
   const isLogPhase = fase === "registro"
+  const rutinaTimerColor = fase === "descanso" ? "#0066ff" : "#00ff88"
 
   return (
     <AnimatePresence mode="wait">
@@ -259,12 +493,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         )}
 
         {isLogPhase ? (
-          /* ---- LOG SET FORM ---- */
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/5 rounded-2xl p-5 space-y-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white/5 rounded-2xl p-5 space-y-4">
             <div className="text-center">
               <h3 className="text-white font-bold text-lg">{current?.exercise?.name}</h3>
               <p className="text-sm text-white/50">
@@ -272,7 +501,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
               </p>
             </div>
 
-            {/* Already logged sets */}
             {setsLog.length > 0 && (
               <div className="bg-black/20 rounded-xl p-3 space-y-1.5 max-h-28 overflow-y-auto">
                 <p className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Series registradas</p>
@@ -285,7 +513,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
               </div>
             )}
 
-            {/* Weight */}
             <div>
               <label className="text-xs text-white/50 mb-1.5 block">Peso (kg)</label>
               <div className="flex gap-2">
@@ -312,7 +539,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
               />
             </div>
 
-            {/* Reps */}
             <div>
               <label className="text-xs text-white/50 mb-1.5 block">Reps completadas</label>
               <input
@@ -324,7 +550,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
               />
             </div>
 
-            {/* RPE */}
             <div>
               <label className="text-xs text-white/50 mb-1.5 block">RPE (esfuerzo percibido)</label>
               <div className="flex gap-1.5">
@@ -355,35 +580,17 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
           </motion.div>
         ) : (
           <>
-            {/* Circular SVG timer */}
             <div className="flex items-center justify-center">
               <div className="relative w-[200px] h-[200px]">
-                <svg
-                  width="200"
-                  height="200"
-                  viewBox="0 0 200 200"
-                  className="-rotate-90 absolute inset-0"
-                >
-                  <circle
-                    cx="100" cy="100" r={RADIUS}
-                    fill="none"
-                    stroke="rgba(255,255,255,0.07)"
-                    strokeWidth="10"
-                  />
-                  <circle
-                    cx="100" cy="100" r={RADIUS}
-                    fill="none"
-                    stroke={timerColor}
-                    strokeWidth="10"
-                    strokeLinecap="round"
-                    strokeDasharray={CIRCUMFERENCE}
-                    strokeDashoffset={dashOffset}
+                <svg width="200" height="200" viewBox="0 0 200 200" className="-rotate-90 absolute inset-0">
+                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
+                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke={rutinaTimerColor} strokeWidth="10"
+                    strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset}
                     className="transition-all duration-1000"
-                    style={{ filter: `drop-shadow(0 0 10px ${timerColor}80)` }}
-                  />
+                    style={{ filter: `drop-shadow(0 0 10px ${rutinaTimerColor}80)` }} />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-bold tabular-nums" style={{ color: timerColor }}>
+                  <span className="text-4xl font-bold tabular-nums" style={{ color: rutinaTimerColor }}>
                     {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
                   </span>
                   <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">
@@ -393,7 +600,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
               </div>
             </div>
 
-            {/* Exercise info */}
             <div className="text-center space-y-1">
               <h3 className="text-xl font-bold text-white">{current?.exercise?.name}</h3>
               <p className="text-sm text-white/50">
@@ -408,7 +614,6 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
           </>
         )}
 
-        {/* Controls */}
         <div className="flex items-center justify-center gap-4 pb-2">
           <Button
             variant="outline"
