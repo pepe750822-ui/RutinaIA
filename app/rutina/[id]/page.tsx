@@ -9,7 +9,7 @@ import TimerEntrenamiento from "@/components/TimerEntrenamiento";
 import EjercicioCard from "@/components/EjercicioCard";
 import { Play, ArrowLeft, Loader2, Clock, Flame, Dumbbell } from "lucide-react";
 import Link from "next/link";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 import type { RutinaEjercicio } from "@/types";
 
 interface RutinaData {
@@ -39,7 +39,7 @@ export default function RutinaDetallePage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = getSupabaseClient();
+      const supabase = getSupabaseBrowserClient();
       if (!supabase || !params.id) { setLoading(false); return; }
 
       const { data } = await supabase
@@ -55,7 +55,7 @@ export default function RutinaDetallePage() {
   }, [params.id]);
 
   const handleComplete = async () => {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabaseBrowserClient();
     if (supabase && rutina) {
       await supabase.from("ejercicios_completados").insert({
         user_id: rutina.user_id,

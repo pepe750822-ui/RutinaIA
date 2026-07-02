@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { User, Dumbbell, Flame, Crown, Zap } from "lucide-react";
 import Link from "next/link";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 interface PerfilData {
   id: string;
@@ -18,12 +18,13 @@ interface PerfilData {
 
 export default function PerfilPage() {
   const [profile, setProfile] = useState<PerfilData | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [rutinaCount, setRutinaCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const supabase = getSupabaseClient();
+      const supabase = getSupabaseBrowserClient();
       if (!supabase) {
         setLoading(false);
         return;
@@ -34,6 +35,8 @@ export default function PerfilPage() {
         setLoading(false);
         return;
       }
+
+      setUserEmail(user.email ?? null);
 
       const { data: prof } = await supabase
         .from("profiles")
@@ -80,8 +83,8 @@ export default function PerfilPage() {
                 <User className="w-8 h-8 text-[#00ff88]" />
               </div>
               <div>
-                <CardTitle>{profile?.nombre ?? "Usuario"}</CardTitle>
-                <CardDescription>{profile?.email ?? "Sin email"}</CardDescription>
+                <CardTitle>{profile?.nombre ?? userEmail?.split("@")[0] ?? "Usuario"}</CardTitle>
+                <CardDescription>{profile?.email ?? userEmail ?? "Sin email"}</CardDescription>
               </div>
             </div>
           </CardHeader>

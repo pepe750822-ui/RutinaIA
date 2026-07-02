@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dumbbell, Sparkles, Zap, ChevronRight, Play, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 interface RutinaRow {
   id: string;
@@ -25,7 +25,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const supabase = getSupabaseClient();
+      const supabase = getSupabaseBrowserClient();
       if (!supabase) return;
 
       const { data: { user } } = await supabase.auth.getUser();
