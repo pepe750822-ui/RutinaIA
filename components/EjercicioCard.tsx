@@ -80,6 +80,7 @@ function ExerciseImage({ name }: { name: string }) {
   const [imgSrc, setImgSrc] = useState<string | null>(urls[0] || null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
   const [fallbackIdx, setFallbackIdx] = useState(0)
+  const [exdbUrl, setExdbUrl] = useState<string | null>(null)
   const svgPlaceholder = getPlaceholderSvg(name)
 
   const handleError = () => {
@@ -87,6 +88,8 @@ function ExerciseImage({ name }: { name: string }) {
     if (next < urls.length) {
       setFallbackIdx(next)
       setImgSrc(urls[next])
+    } else if (exdbUrl) {
+      setImgSrc(exdbUrl)
     } else {
       setImgSrc(null)
     }
@@ -97,7 +100,7 @@ function ExerciseImage({ name }: { name: string }) {
       .then((r) => r.json())
       .then((data) => {
         if (data.videoUrl) setVideoSrc(data.videoUrl)
-        else if (data.imageUrl && fallbackIdx >= urls.length) setImgSrc(data.imageUrl)
+        else if (data.imageUrl) setExdbUrl(data.imageUrl)
       })
       .catch(() => {})
   }, [name]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -108,11 +111,9 @@ function ExerciseImage({ name }: { name: string }) {
     )
   }
 
-  // eslint-disable-next-line @next/next/no-img-element
   return imgSrc ? (
     <img src={imgSrc} alt={name} className="w-full h-full object-cover" onError={handleError} />
   ) : (
-    // eslint-disable-next-line @next/next/no-img-element
     <img src={svgPlaceholder} alt={name} className="w-full h-full object-cover" />
   )
 }
