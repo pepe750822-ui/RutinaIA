@@ -1,10 +1,44 @@
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { generarRutinaConIA } from "@/lib/deepseek";
 import { getAllExercises } from "@/lib/exercises";
 import { filterExercisesByBodyPart, filterExercisesByEquipment } from "@/lib/exercises";
+import { checkWeeklyLimit, incrementWeeklyCount } from "@/lib/premium";
 
 export async function POST(request: Request) {
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createServerClient(supabaseUrl, supabaseKey, {
+        cookies: {
+          getAll: () => [],
+          setAll: () => {},
+        },
+      });
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        return NextResponse.json(
+          { error: "Debes iniciar sesión para generar una rutina" },
+          { status: 401 }
+        );
+      }
+
+      const limit = await checkWeeklyLimit(user.id);
+      if (!limit.allowed) {
+        return NextResponse.json(
+          {
+            error: `Has alcanzado el límite de ${limit.max} rutinas gratuitas por semana. Actualiza a premium para generar más.`,
+            limit,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const body = await request.json();
 
     const {
@@ -81,7 +115,41 @@ export async function POST(request: Request) {
       ejerciciosFiltrados
     );
 
-    return NextResponse.json(result);
+    let rutinaId: string | undefined;
+
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createServerClient(supabaseUrl, supabaseKey, {
+        cookies: {
+          getAll: () => [],
+          setAll: () => {},
+        },
+      });
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: rutina, error } = await supabase
+          .from("rutinas")
+          .insert({
+            user_id: user.id,
+            nombre: result.nombre,
+            objetivo,
+            nivel,
+            ejercicios: result.ejercicios,
+            duracion_minutos: result.duracion_minutos,
+          })
+          .select("id")
+          .single();
+
+        if (!error && rutina) {
+          rutinaId = rutina.id;
+        }
+
+        await incrementWeeklyCount(user.id);
+      }
+    }
+
+    return NextResponse.json({ ...result, id: rutinaId });
   } catch (error: unknown) {
     console.error("Error generando rutina:", error);
     return NextResponse.json(

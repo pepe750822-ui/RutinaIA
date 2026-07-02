@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -10,12 +11,15 @@ import { Loader2, Dumbbell, Check, ChevronLeft, ChevronRight } from "lucide-reac
 import EjercicioCard from "./EjercicioCard"
 import { RutinaEjercicio, RutinaGeneratorForm } from "@/types"
 
+interface RutinaResult {
+  id?: string
+  nombre: string
+  duracion_minutos: number
+  ejercicios: RutinaEjercicio[]
+}
+
 interface Props {
-  onGenerate: (data: RutinaGeneratorForm) => Promise<{
-    nombre: string
-    duracion_minutos: number
-    ejercicios: RutinaEjercicio[]
-  } | null>
+  onGenerate: (data: RutinaGeneratorForm) => Promise<RutinaResult | null>
 }
 
 const defaultForm: RutinaGeneratorForm = {
@@ -122,14 +126,11 @@ function RadioGroup({
 }
 
 export default function RutinaGenerator({ onGenerate }: Props) {
+  const router = useRouter()
   const [step, setStep] = useState(0)
   const [form, setForm] = useState<RutinaGeneratorForm>(defaultForm)
   const [loading, setLoading] = useState(false)
-  const [rutina, setRutina] = useState<{
-    nombre: string
-    duracion_minutos: number
-    ejercicios: RutinaEjercicio[]
-  } | null>(null)
+  const [rutina, setRutina] = useState<RutinaResult | null>(null)
   const [error, setError] = useState("")
 
   const update = <K extends keyof RutinaGeneratorForm>(
@@ -575,7 +576,9 @@ export default function RutinaGenerator({ onGenerate }: Props) {
                 {rutina.ejercicios.length} ejercicios
               </p>
             </div>
-            <Button variant="outline">Guardar rutina</Button>
+            <Button variant="outline" onClick={() => rutina?.id && router.push(`/rutina/${rutina.id}`)}>
+              {rutina?.id ? "Ver rutina guardada" : "Guardar rutina"}
+            </Button>
           </div>
 
           <div className="space-y-3">

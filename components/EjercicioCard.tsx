@@ -1,8 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useState } from "react"
 import { RutinaEjercicio } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
+import { getExerciseImageUrl } from "@/lib/images"
 
 interface Props {
   ejercicio: RutinaEjercicio
@@ -11,6 +13,8 @@ interface Props {
 
 export default function EjercicioCard({ ejercicio, index }: Props) {
   const { exercise, sets, reps, restSeconds } = ejercicio
+  const imgUrl = getExerciseImageUrl(exercise.media_id)
+  const [imgError, setImgError] = useState(false)
 
   return (
     <motion.div
@@ -22,7 +26,17 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <div className="w-24 h-24 rounded-lg overflow-hidden bg-[#00ff88]/10 shrink-0 flex items-center justify-center">
-              <span className="text-2xl">🏋️</span>
+              {imgUrl && !imgError ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imgUrl}
+                  alt={exercise.name}
+                  className="w-full h-full object-cover"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <span className="text-2xl">🏋️</span>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-white font-semibold truncate">

@@ -7,6 +7,7 @@ export interface Exercise {
   category?: string;
   instructions?: Record<string, string>;
   instruction_steps?: Record<string, string[]>;
+  media_id?: string | null;
 }
 
 export interface RutinaEjercicio {
