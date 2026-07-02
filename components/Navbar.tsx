@@ -1,13 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Dumbbell } from "lucide-react"
+import { Menu, X, Dumbbell, LayoutDashboard, LogIn } from "lucide-react"
+import { getSupabaseBrowserClient } from "@/lib/supabase"
+import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [authReady, setAuthReady] = useState(false)
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setAuthReady(true)
+      return
+    }
+
+    supabase.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      setUser(data.session?.user ?? null)
+      setAuthReady(true)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0f1e]/80 backdrop-blur-xl">
@@ -25,9 +48,24 @@ export default function Navbar() {
             <Link href="#precios" className="text-sm text-white/50 hover:text-white transition-colors">
               Precios
             </Link>
-            <Link href="/app">
-              <Button size="sm">Comenzar</Button>
-            </Link>
+
+            {authReady && (
+              user ? (
+                <Link href="/app">
+                  <Button size="sm" className="gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Mi dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button size="sm" variant="outline" className="gap-2">
+                    <LogIn className="w-4 h-4" />
+                    Iniciar sesión
+                  </Button>
+                </Link>
+              )
+            )}
           </div>
 
           <button
@@ -54,9 +92,24 @@ export default function Navbar() {
               <Link href="#precios" className="block text-white/50 hover:text-white py-2">
                 Precios
               </Link>
-              <Link href="/app">
-                <Button className="w-full">Comenzar</Button>
-              </Link>
+
+              {authReady && (
+                user ? (
+                  <Link href="/app">
+                    <Button className="w-full gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Mi dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full gap-2">
+                      <LogIn className="w-4 h-4" />
+                      Iniciar sesión
+                    </Button>
+                  </Link>
+                )
+              )}
             </div>
           </motion.div>
         )}
