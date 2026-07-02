@@ -18,6 +18,12 @@ export interface RutinaEjercicio {
   order: number;
 }
 
+export interface RutinaDia {
+  nombre: string;
+  duracion_minutos: number;
+  ejercicios: RutinaEjercicio[];
+}
+
 export interface Rutina {
   id: string;
   user_id: string;
@@ -25,6 +31,7 @@ export interface Rutina {
   objetivo: string;
   nivel: string;
   ejercicios: RutinaEjercicio[];
+  dias?: RutinaDia[];
   created_at: string;
   completada: boolean;
   duracion_minutos: number;

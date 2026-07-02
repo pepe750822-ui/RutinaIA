@@ -10,7 +10,7 @@ import EjercicioCard from "@/components/EjercicioCard";
 import { Play, ArrowLeft, Loader2, Clock, Flame, Dumbbell } from "lucide-react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import type { RutinaEjercicio } from "@/types";
+import type { RutinaDia, RutinaEjercicio } from "@/types";
 
 interface RutinaData {
   id: string;
@@ -19,6 +19,7 @@ interface RutinaData {
   objetivo: string;
   nivel: string;
   ejercicios: RutinaEjercicio[];
+  dias?: RutinaDia[];
   duracion_minutos: number;
   created_at: string;
   completada: boolean;
@@ -36,6 +37,7 @@ export default function RutinaDetallePage() {
   const [rutina, setRutina] = useState<RutinaData | null>(null);
   const [loading, setLoading] = useState(true);
   const [modoEntrenamiento, setModoEntrenamiento] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -162,17 +164,43 @@ export default function RutinaDetallePage() {
           </div>
         </div>
 
-        {/* Exercise list */}
-        {rutina.ejercicios?.length > 0 ? (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-white/50 uppercase tracking-wider">
-              Ejercicios
-            </h2>
-            {rutina.ejercicios.map((ej: RutinaEjercicio, i: number) => (
-              <EjercicioCard key={ej.exercise?.id ?? i} ejercicio={ej} index={i} />
+        {/* Day tabs */}
+        {rutina.dias && rutina.dias.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {rutina.dias.map((d: RutinaDia, i: number) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setSelectedDay(i)}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold border whitespace-nowrap transition-all ${
+                  selectedDay === i
+                    ? "bg-[#00ff88]/10 border-[#00ff88] text-[#00ff88]"
+                    : "border-white/10 text-white/60 hover:border-white/20"
+                }`}
+              >
+                {d.nombre}
+              </button>
             ))}
           </div>
-        ) : (
+        )}
+
+        {/* Exercise list */}
+        {(() => {
+          const ejercicios = (rutina.dias && rutina.dias[selectedDay])
+            ? rutina.dias[selectedDay].ejercicios
+            : rutina.ejercicios;
+          return ejercicios?.length > 0 ? (
+            <div className="space-y-4">
+              <h2 className="text-sm font-bold text-white/50 uppercase tracking-wider">
+                Ejercicios
+              </h2>
+              {ejercicios.map((ej: RutinaEjercicio, i: number) => (
+                <EjercicioCard key={`${ej.exercise?.id ?? i}-${i}`} ejercicio={ej} index={i} />
+              ))}
+            </div>
+          ) : null;
+        })()}
+        {(rutina.ejercicios?.length === 0) && (
           <Card>
             <CardContent className="p-12 text-center">
               <p className="text-white/50">Esta rutina no tiene ejercicios aún.</p>
@@ -185,18 +213,23 @@ export default function RutinaDetallePage() {
       </motion.div>
 
       {/* Sticky CTA */}
-      {rutina.ejercicios?.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 lg:left-64 p-4 bg-gradient-to-t from-[#0a0f1e] via-[#0a0f1e]/90 to-transparent pb-6">
-          <Button
-            onClick={() => setModoEntrenamiento(true)}
-            size="lg"
-            className="w-full max-w-lg mx-auto flex h-14 rounded-2xl bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold text-base gap-2"
-          >
-            <Play className="w-5 h-5" />
-            Iniciar entrenamiento
-          </Button>
-        </div>
-      )}
+      {(() => {
+        const ejercicios = (rutina.dias && rutina.dias[selectedDay])
+          ? rutina.dias[selectedDay].ejercicios
+          : rutina.ejercicios;
+        return ejercicios?.length > 0 ? (
+          <div className="fixed bottom-0 left-0 right-0 lg:left-64 p-4 bg-gradient-to-t from-[#0a0f1e] via-[#0a0f1e]/90 to-transparent pb-6">
+            <Button
+              onClick={() => setModoEntrenamiento(true)}
+              size="lg"
+              className="w-full max-w-lg mx-auto flex h-14 rounded-2xl bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold text-base gap-2"
+            >
+              <Play className="w-5 h-5" />
+              Iniciar entrenamiento
+            </Button>
+          </div>
+        ) : null;
+      })()}
     </>
   );
 }

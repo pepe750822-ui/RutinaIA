@@ -1,4 +1,4 @@
-import { Exercise, RutinaEjercicio, RutinaGeneratorForm } from "@/types";
+import { Exercise, RutinaEjercicio, RutinaDia, RutinaGeneratorForm } from "@/types";
 
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
@@ -161,6 +161,8 @@ function buildPrompt(
     )
     .join("\n");
 
+  const numDias = data.frecuencia_semanal === "1_2" ? 2 : 3;
+
   return `Eres un entrenador personal experto y nutricionista. Genera una rutina de ejercicios HIPERPERSONALIZADA basada en los siguientes datos del usuario.
 
 ## DATOS DEL USUARIO
@@ -199,12 +201,14 @@ function buildPrompt(
 
 ## INSTRUCCIONES
 
-1. Selecciona EXACTAMENTE 6 ejercicios del dataset listado abajo.
-2. Para cada ejercicio, proporciona series, repeticiones y descanso.
-3. Adapta la intensidad según el nivel, experiencia y condición física del usuario.
-4. Si hay lesiones o condiciones médicas, evita ejercicios que puedan agravarlas.
-5. Prioriza los grupos musculares indicados.
-6. Considera el equipo disponible.
+1. Genera ${numDias} días de entrenamiento con grupos musculares distintos cada día.
+2. Cada día debe tener 5-6 ejercicios.
+3. Distribuye los grupos musculares de forma equilibrada entre los días.
+4. Para cada ejercicio, proporciona series, repeticiones y descanso.
+5. Adapta la intensidad según el nivel, experiencia y condición física del usuario.
+6. Si hay lesiones o condiciones médicas, evita ejercicios que puedan agravarlas.
+7. Prioriza los grupos musculares indicados.
+8. Considera el equipo disponible.
 
 ## DATASET DE EJERCICIOS DISPONIBLES (${selectedExercises.length} de ${ejercicios.length} total):
 
@@ -213,25 +217,24 @@ ${exercisesTable}
 Responde SOLO con un JSON válido con esta estructura exacta, SIN texto adicional:
 {
   "nombre": "Nombre creativo para la rutina (máx 60 caracteres, en español)",
-  "duracion_minutos": ${DURACION_MIDPOINT[data.duracion_minutos]},
-  "ejercicios": [
+  "dias": [
     {
-      "exerciseId": "ID exacto del dataset (ej: 0001)",
-      "sets": 3,
-      "reps": 12,
-      "restSeconds": 60,
-      "order": 1
+      "nombre": "Día 1: Push (Pecho, Hombros, Tríceps)",
+      "duracion_minutos": ${DURACION_MIDPOINT[data.duracion_minutos]},
+      "ejercicios": [
+        { "exerciseId": "ID exacto del dataset (ej: 0001)", "sets": 3, "reps": 12, "restSeconds": 60, "order": 1 }
+      ]
     }
   ]
 }
 
-Los IDs deben coincidir EXACTAMENTE con los del dataset listado arriba.`;
+Los IDs deben coincidir EXACTAMENTE con los del dataset listado arriba. El array "dias" debe tener exactamente ${numDias} elementos.`;
 }
 
 export async function generarRutinaConIA(
   data: RutinaGeneratorForm,
   ejercicios: Exercise[]
-): Promise<{ nombre: string; duracion_minutos: number; ejercicios: RutinaEjercicio[] }> {
+): Promise<{ nombre: string; duracion_minutos: number; ejercicios: RutinaEjercicio[]; dias: RutinaDia[] }> {
   const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
@@ -268,17 +271,26 @@ export async function generarRutinaConIA(
   const json = await response.json();
   const content = json.choices[0]?.message?.content || "";
 
+  type DeepSeekEjercicio = {
+    exerciseId: string;
+    name?: string;
+    sets?: number;
+    reps?: number;
+    restSeconds?: number;
+    order?: number;
+  };
+
+  type DeepSeekDia = {
+    nombre?: string;
+    duracion_minutos?: number;
+    ejercicios?: DeepSeekEjercicio[];
+  };
+
   let parsed: {
     nombre?: string;
     duracion_minutos?: number;
-    ejercicios?: Array<{
-      exerciseId: string;
-      name?: string;
-      sets?: number;
-      reps?: number;
-      restSeconds?: number;
-      order?: number;
-    }>;
+    ejercicios?: DeepSeekEjercicio[];
+    dias?: DeepSeekDia[];
   };
   try {
     const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -288,38 +300,76 @@ export async function generarRutinaConIA(
     throw new Error("La IA no devolvió un JSON válido. Intenta de nuevo.");
   }
 
-  if (!parsed.ejercicios || !Array.isArray(parsed.ejercicios)) {
-    throw new Error("La IA no generó ejercicios válidos. Intenta de nuevo.");
-  }
-
   const ejerciciosMap = new Map(ejercicios.map((e) => [e.id, e]));
   const ejerciciosPorNombre = new Map(
     ejercicios.map((e) => [e.name.toLowerCase().trim(), e])
   );
 
-  const rutinaEjercicios: RutinaEjercicio[] = [];
-
-  for (const ej of parsed.ejercicios) {
+  function mapEjercicio(ej: DeepSeekEjercicio, order: number): RutinaEjercicio | null {
     let exercise = ejerciciosMap.get(ej.exerciseId);
-
     if (!exercise && ej.name) {
       exercise = ejerciciosPorNombre.get(ej.name.toLowerCase().trim());
     }
+    if (!exercise) return null;
+    return {
+      exercise,
+      sets: ej.sets ?? 3,
+      reps: ej.reps ?? 12,
+      restSeconds: ej.restSeconds ?? 60,
+      order,
+    };
+  }
 
-    if (exercise) {
-      rutinaEjercicios.push({
-        exercise,
-        sets: ej.sets ?? 3,
-        reps: ej.reps ?? 12,
-        restSeconds: ej.restSeconds ?? 60,
-        order: ej.order ?? rutinaEjercicios.length + 1,
-      });
+  let totalDuration = parsed.duracion_minutos || 30;
+  const flatEjercicios: RutinaEjercicio[] = [];
+  let dias: RutinaDia[] = [];
+
+  if (parsed.dias && parsed.dias.length > 0) {
+    let globalOrder = 0;
+    totalDuration = 0;
+    for (const d of parsed.dias) {
+      if (!d.ejercicios) continue;
+      const dayEjercicios: RutinaEjercicio[] = [];
+      for (const ej of d.ejercicios) {
+        globalOrder++;
+        const mapped = mapEjercicio(ej, globalOrder);
+        if (mapped) dayEjercicios.push(mapped);
+      }
+      if (dayEjercicios.length > 0) {
+        const dayDuration = d.duracion_minutos || parsed.duracion_minutos || 30;
+        totalDuration += dayDuration;
+        dias.push({
+          nombre: d.nombre || `Día ${dias.length + 1}`,
+          duracion_minutos: dayDuration,
+          ejercicios: dayEjercicios,
+        });
+        flatEjercicios.push(...dayEjercicios);
+      }
     }
+  } else if (parsed.ejercicios) {
+    let order = 0;
+    for (const ej of parsed.ejercicios) {
+      order++;
+      const mapped = mapEjercicio(ej, order);
+      if (mapped) flatEjercicios.push(mapped);
+    }
+    if (flatEjercicios.length > 0) {
+      dias = [{
+        nombre: "Día único",
+        duracion_minutos: totalDuration,
+        ejercicios: flatEjercicios,
+      }];
+    }
+  }
+
+  if (flatEjercicios.length === 0) {
+    throw new Error("La IA no generó ejercicios válidos. Intenta de nuevo.");
   }
 
   return {
     nombre: parsed.nombre || "Rutina personalizada",
-    duracion_minutos: parsed.duracion_minutos || 30,
-    ejercicios: rutinaEjercicios,
+    duracion_minutos: totalDuration,
+    ejercicios: flatEjercicios,
+    dias,
   };
 }

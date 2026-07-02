@@ -139,6 +139,7 @@ export async function POST(request: Request) {
           objetivo,
           nivel,
           ejercicios: result.ejercicios,
+          dias: result.dias,
           duracion_minutos: result.duracion_minutos,
         })
         .select("id")

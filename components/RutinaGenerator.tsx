@@ -9,13 +9,14 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Dumbbell, Home, Shuffle, ChevronLeft, ChevronRight } from "lucide-react"
 import EjercicioCard from "./EjercicioCard"
-import { RutinaEjercicio, RutinaGeneratorForm } from "@/types"
+import { RutinaDia, RutinaEjercicio, RutinaGeneratorForm } from "@/types"
 
 interface RutinaResult {
   id?: string
   nombre: string
   duracion_minutos: number
   ejercicios: RutinaEjercicio[]
+  dias?: RutinaDia[]
 }
 
 interface Props {
@@ -130,6 +131,7 @@ export default function RutinaGenerator({ onGenerate }: Props) {
   const [form, setForm] = useState<RutinaGeneratorForm>(defaultForm)
   const [loading, setLoading] = useState(false)
   const [rutina, setRutina] = useState<RutinaResult | null>(null)
+  const [selectedDay, setSelectedDay] = useState(0)
   const [error, setError] = useState("")
 
   const update = <K extends keyof RutinaGeneratorForm>(
@@ -578,7 +580,7 @@ export default function RutinaGenerator({ onGenerate }: Props) {
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white">{rutina.nombre}</h2>
               <p className="text-white/50 text-sm mt-0.5">
-                {rutina.duracion_minutos} min · {rutina.ejercicios.length} ejercicios
+                {rutina.dias?.length || 1} días · {rutina.ejercicios.length} ejercicios totales
               </p>
             </div>
             <Button
@@ -589,9 +591,31 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             </Button>
           </div>
 
+          {(rutina.dias && rutina.dias.length > 1) && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {rutina.dias.map((d, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setSelectedDay(i)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold border whitespace-nowrap transition-all ${
+                    selectedDay === i
+                      ? "bg-[#00ff88]/10 border-[#00ff88] text-[#00ff88]"
+                      : "border-white/10 text-white/60 hover:border-white/20"
+                  }`}
+                >
+                  {d.nombre}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="space-y-4">
-            {rutina.ejercicios.map((ej, i) => (
-              <EjercicioCard key={ej.exercise.id} ejercicio={ej} index={i} />
+            {(rutina.dias && rutina.dias[selectedDay]
+              ? rutina.dias[selectedDay].ejercicios
+              : rutina.ejercicios
+            ).map((ej, i) => (
+              <EjercicioCard key={`${ej.exercise.id}-${i}`} ejercicio={ej} index={i} />
             ))}
           </div>
         </motion.div>
