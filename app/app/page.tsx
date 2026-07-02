@@ -7,12 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Dumbbell, Sparkles, Zap, ChevronRight, Play, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { getExerciseImageUrl } from "@/lib/images";
+
+interface RutinaEjDB {
+  exercise: { media_id?: string | null; name: string };
+}
 
 interface RutinaRow {
   id: string;
   nombre: string;
   duracion_minutos: number;
-  ejercicios: unknown[];
+  ejercicios: RutinaEjDB[];
   created_at: string;
   objetivo: string;
   nivel: string;
@@ -164,8 +169,17 @@ export default function DashboardPage() {
                   <Card className="hover:border-white/20 transition-colors cursor-pointer">
                     <CardContent className="p-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-xl bg-[#00ff88]/10 flex items-center justify-center shrink-0">
-                          <Dumbbell className="w-6 h-6 text-[#00ff88]" />
+                        <div className="w-20 h-20 rounded-xl bg-[#00ff88]/10 flex items-center justify-center shrink-0 overflow-hidden">
+                          {(() => {
+                            const ej = r.ejercicios?.[0];
+                            const imgUrl = ej ? getExerciseImageUrl(ej.exercise?.media_id) : null;
+                            return imgUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={imgUrl} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <Dumbbell className="w-6 h-6 text-[#00ff88]" />
+                            );
+                          })()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="mb-0.5">

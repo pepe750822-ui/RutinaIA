@@ -66,9 +66,9 @@ export default function LoginPage() {
         </Link>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-          <h1 className="text-xl font-bold text-white mb-2">Iniciar sesión</h1>
+          <h1 className="text-xl font-bold text-white mb-1">Bienvenido de nuevo</h1>
           <p className="text-sm text-white/40 mb-8">
-            Continúa con tu cuenta de Google para acceder a tus rutinas.
+            Ingresa a tu ecosistema de alto rendimiento
           </p>
 
           <Button
@@ -86,6 +86,13 @@ export default function LoginPage() {
               {error}
             </p>
           )}
+
+          <p className="text-center text-xs text-white/30 mt-6 leading-relaxed">
+            Al continuar, aceptas nuestros{" "}
+            <a href="#" className="text-[#00ff88]/70 hover:text-[#00ff88] transition-colors">Términos de Servicio</a>
+            {" "}y{" "}
+            <a href="#" className="text-[#00ff88]/70 hover:text-[#00ff88] transition-colors">Política de Privacidad</a>.
+          </p>
         </div>
 
         <p className="text-center text-sm text-white/40 mt-6">

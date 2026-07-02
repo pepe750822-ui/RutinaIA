@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RutinaIA - Training Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(12, 22, 14, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+        }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        @keyframes pulse-neon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-neon {
+            animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#001849",
+                    "primary-fixed": "#60ff99",
+                    "tertiary": "#fffaf7",
+                    "secondary-fixed-dim": "#b3c5ff",
+                    "inverse-surface": "#dae6d8",
+                    "on-primary-container": "#007139",
+                    "error": "#ffb4ab",
+                    "secondary": "#b3c5ff",
+                    "inverse-on-surface": "#29332a",
+                    "surface-variant": "#2d372e",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "on-tertiary-fixed": "#241a00",
+                    "secondary-fixed": "#dae1ff",
+                    "on-primary": "#003919",
+                    "background": "#0c160e",
+                    "on-error": "#690005",
+                    "surface-container-highest": "#2d372e",
+                    "on-secondary": "#002b75",
+                    "on-tertiary": "#3d2f00",
+                    "on-surface-variant": "#b9cbb9",
+                    "error-container": "#93000a",
+                    "primary-fixed-dim": "#00e479",
+                    "on-tertiary-container": "#795f01",
+                    "primary": "#f1ffef",
+                    "on-background": "#dae6d8",
+                    "outline": "#849585",
+                    "on-secondary-fixed-variant": "#003fa4",
+                    "surface-container": "#18221a",
+                    "surface-container-low": "#141e16",
+                    "tertiary-fixed": "#ffe08d",
+                    "outline-variant": "#3b4b3d",
+                    "on-surface": "#dae6d8",
+                    "surface-tint": "#00e479",
+                    "surface-bright": "#323c32",
+                    "surface-container-lowest": "#071009",
+                    "surface": "#0c160e",
+                    "secondary-container": "#0266ff",
+                    "on-primary-fixed-variant": "#005228",
+                    "surface-dim": "#0c160e",
+                    "surface-container-high": "#222c24",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary-fixed-dim": "#e5c364",
+                    "on-error-container": "#ffdad6",
+                    "primary-container": "#00ff88",
+                    "on-secondary-container": "#f9f7ff",
+                    "inverse-primary": "#006d37"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "32px",
+                    "gutter": "16px",
+                    "base": "4px",
+                    "sm": "16px",
+                    "xl": "48px",
+                    "xs": "8px",
+                    "md": "24px",
+                    "container-margin": "20px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden flex flex-col">
+<!-- Top Navigation Anchor (As per JSON hierarchy - Transformed for Context) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary-container" data-icon="close">close</span>
+</button>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary-container tracking-tighter">RutinaIA</h1>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-md text-label-md uppercase tracking-widest text-primary-fixed">Training Mode</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center pt-24 pb-32 px-container-margin relative z-10">
+<!-- Background Animation Overlay -->
+<div class="absolute inset-0 -z-10 pointer-events-none">
+
+</div>
+<!-- Overall Progress Header -->
+<div class="w-full max-w-md mb-lg">
+<div class="flex justify-between items-end mb-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Progreso de Sesión</span>
+<span class="font-headline-md text-headline-md text-primary-container">4 / 12</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-secondary-container to-primary-container w-1/3 shadow-[0_0_10px_rgba(0,255,136,0.5)]"></div>
+</div>
+</div>
+<!-- Phase Indicators -->
+<div class="flex gap-md mb-lg">
+<div class="flex flex-col items-center gap-xs opacity-40">
+<span class="font-label-sm text-label-sm">Preparación</span>
+<div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+</div>
+<div class="flex flex-col items-center gap-xs">
+<span class="font-label-sm text-label-sm text-primary-container font-bold">Ejercicio</span>
+<div class="w-2 h-2 rounded-full bg-primary-container neon-glow"></div>
+</div>
+<div class="flex flex-col items-center gap-xs opacity-40">
+<span class="font-label-sm text-label-sm">Descanso</span>
+<div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+</div>
+</div>
+<!-- Central Timer & Exercise Info -->
+<div class="flex flex-col items-center justify-center w-full max-w-xl gap-xl lg:flex-row lg:justify-between">
+<!-- Visual Placeholder / GIF -->
+<div class="w-full lg:w-1/2 aspect-square max-w-[280px] glass-panel rounded-xl overflow-hidden relative group">
+<div class="absolute inset-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A high-contrast cinematic shot of a professional athlete performing explosive pushups in a dark, high-tech gym setting. The lighting is dominated by neon green and blue laser lines that highlight the athlete's muscle definition. The style is futuristic, glassmorphic, and clean, with a shallow depth of field and a focus on power and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLtS6EipWRh0vgdltNTjnZ1cszOioJ2I7BewLVrjJGJEaf0zlgHlnN6rM-yRw4F2qlp9n20Du3nGuBBI21OHoWYY0DR4GWdTmQLtv_799eYxPLMTugBaiR1TYL-DpsbhvbxYpjg4lOhqxK4fddALlZWZ8yDhNZX3_1FK0YXGpSwKYuKaoT7yr7Ix7RH4Iva3V1MsiPAFxOEEs_1-_eVSIDPpMWLonAy3o307Lr8d2LwUE_UF6eiFI"/>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-sm bg-gradient-to-t from-background to-transparent">
+<p class="font-label-md text-label-md text-white">Próximo: Flexiones Diamante</p>
+</div>
+</div>
+<!-- Countdown Timer Area -->
+<div class="relative flex items-center justify-center w-[280px] h-[280px]">
+<svg class="absolute w-full h-full" viewbox="0 0 100 100">
+<circle class="text-surface-container" cx="50" cy="50" fill="transparent" r="44" stroke="currentColor" stroke-width="6"></circle>
+<circle class="progress-ring__circle text-primary-container" cx="50" cy="50" fill="transparent" r="44" stroke="currentColor" stroke-dasharray="276.46" stroke-dashoffset="69.11" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="text-center">
+<span class="block font-display-lg text-display-lg text-primary-container neon-text-glow leading-none">00:45</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-[0.2em]">Segundos</span>
+</div>
+</div>
+</div>
+<!-- Exercise Details -->
+<div class="mt-xl text-center">
+<h2 class="font-headline-lg text-headline-lg text-white mb-xs">Press de Banca Inclinado</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Serie 2 de 4 • 12 Repeticiones • 60kg</p>
+</div>
+</main>
+<!-- Playback Controls (Sticky Bottom Area) -->
+<div class="fixed bottom-0 left-0 w-full z-50 h-32 flex flex-col items-center justify-center px-container-margin bg-background/40 backdrop-blur-lg border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<div class="flex items-center gap-xl">
+<!-- Prev -->
+<button class="w-12 h-12 flex items-center justify-center rounded-full glass-panel text-white hover:text-primary-container transition-all active:scale-90">
+<span class="material-symbols-outlined text-[32px]" data-icon="skip_previous">skip_previous</span>
+</button>
+<!-- Play/Pause -->
+<button class="w-20 h-20 flex items-center justify-center rounded-full bg-primary-container text-background shadow-[0_0_20px_rgba(0,255,136,0.6)] hover:scale-105 active:scale-95 transition-all" id="main-playback">
+<span class="material-symbols-outlined text-[48px]" data-icon="pause" data-weight="fill" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<!-- Next -->
+<button class="w-12 h-12 flex items-center justify-center rounded-full glass-panel text-white hover:text-primary-container transition-all active:scale-90">
+<span class="material-symbols-outlined text-[32px]" data-icon="skip_next">skip_next</span>
+</button>
+</div>
+<!-- Contextual Footer Labels -->
+<div class="mt-base">
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-60">Rutina: Pecho Explosivo AI</span>
+</div>
+</div>
+<!-- UI Interaction Script -->
+<script>
+        const playBtn = document.getElementById('main-playback');
+        const iconSpan = playBtn.querySelector('.material-symbols-outlined');
+        let isPlaying = true;
+
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                iconSpan.innerText = 'pause';
+                playBtn.classList.add('shadow-[0_0_20px_rgba(0,255,136,0.6)]');
+            } else {
+                iconSpan.innerText = 'play_arrow';
+                playBtn.classList.remove('shadow-[0_0_20px_rgba(0,255,136,0.6)]');
+            }
+        });
+
+        // Simple timer simulation for the ring
+        let offset = 69.11;
+        const ring = document.querySelector('.progress-ring__circle');
+        setInterval(() => {
+            if (isPlaying) {
+                offset -= 0.5;
+                if (offset < 0) offset = 276.46;
+                ring.style.strokeDashoffset = offset;
+            }
+        }, 100);
+    </script>
+</body></html>

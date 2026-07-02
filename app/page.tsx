@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dumbbell, Sparkles, BarChart3, Zap, Check, Cpu } from "lucide-react";
+import { Dumbbell, Sparkles, BarChart3, Zap, Check, Cpu, UtensilsCrossed } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const fadeUp = {
@@ -23,9 +23,9 @@ const features = [
     desc: "RutinaIA analiza tu fatiga y rendimiento para ajustar el peso y repeticiones de tu próxima sesión.",
   },
   {
-    icon: Dumbbell,
-    title: "1,324 ejercicios",
-    desc: "Extenso dataset con ejercicios animados y explicaciones detalladas para cada movimiento.",
+    icon: UtensilsCrossed,
+    title: "Nutrición Inteligente",
+    desc: "Planes de alimentación sincronizados con tu gasto calórico real. Recetas optimizadas para tus objetivos.",
   },
   {
     icon: BarChart3,
@@ -124,7 +124,7 @@ export default function LandingPage() {
             </Button>
             <Link href="#features">
               <Button variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8">
-                Conocer más
+                Ver Demo
               </Button>
             </Link>
           </div>
@@ -136,10 +136,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <motion.div {...fadeUp} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Todo lo que necesitas
+              Diseñado para el Rendimiento
             </h2>
             <p className="text-white/50 max-w-xl mx-auto">
-              Una plataforma completa para transformar tu cuerpo con el poder de la IA.
+              Tecnología de última generación al servicio de tu cuerpo.
             </p>
           </motion.div>
 
@@ -154,7 +154,9 @@ export default function LandingPage() {
               >
                 <Card className="h-full">
                   <CardHeader>
-                    <f.icon className="w-10 h-10 text-[#00ff88] mb-2" />
+                    <div className="w-12 h-12 rounded-full bg-[#00ff88]/10 flex items-center justify-center mb-3">
+                      <f.icon className="w-6 h-6 text-[#00ff88]" />
+                    </div>
                     <CardTitle>{f.title}</CardTitle>
                     <CardDescription>{f.desc}</CardDescription>
                   </CardHeader>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RutinaIA | Tu Entrenador Digital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#001849",
+                    "primary-fixed": "#60ff99",
+                    "tertiary": "#fffaf7",
+                    "secondary-fixed-dim": "#b3c5ff",
+                    "inverse-surface": "#dae6d8",
+                    "on-primary-container": "#007139",
+                    "error": "#ffb4ab",
+                    "secondary": "#b3c5ff",
+                    "inverse-on-surface": "#29332a",
+                    "surface-variant": "#2d372e",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "on-tertiary-fixed": "#241a00",
+                    "secondary-fixed": "#dae1ff",
+                    "on-primary": "#003919",
+                    "background": "#0c160e",
+                    "on-error": "#690005",
+                    "surface-container-highest": "#2d372e",
+                    "on-secondary": "#002b75",
+                    "on-tertiary": "#3d2f00",
+                    "on-surface-variant": "#b9cbb9",
+                    "error-container": "#93000a",
+                    "primary-fixed-dim": "#00e479",
+                    "on-tertiary-container": "#795f01",
+                    "primary": "#f1ffef",
+                    "on-background": "#dae6d8",
+                    "outline": "#849585",
+                    "on-secondary-fixed-variant": "#003fa4",
+                    "surface-container": "#18221a",
+                    "surface-container-low": "#141e16",
+                    "tertiary-fixed": "#ffe08d",
+                    "outline-variant": "#3b4b3d",
+                    "on-surface": "#dae6d8",
+                    "surface-tint": "#00e479",
+                    "surface-bright": "#323c32",
+                    "surface-container-lowest": "#071009",
+                    "surface": "#0c160e",
+                    "secondary-container": "#0266ff",
+                    "on-primary-fixed-variant": "#005228",
+                    "surface-dim": "#0c160e",
+                    "surface-container-high": "#222c24",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary-fixed-dim": "#e5c364",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#ffdb79",
+                    "primary-container": "#00ff88",
+                    "on-secondary-container": "#f9f7ff",
+                    "inverse-primary": "#006d37"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "32px",
+                    "gutter": "16px",
+                    "base": "4px",
+                    "sm": "16px",
+                    "xl": "48px",
+                    "xs": "8px",
+                    "md": "24px",
+                    "container-margin": "20px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0a0f1e;
+            color: #dae6d8;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        .neon-glow-strong {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 109, 55, 0.15) 0%, rgba(10, 15, 30, 0) 70%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" data-icon="fitness_center">fitness_center</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary-container tracking-tighter">RutinaIA</span>
+</div>
+<nav class="hidden md:flex gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#features">Funciones</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#pricing">Precios</a>
+</nav>
+<button class="bg-primary-container text-on-primary px-md py-xs rounded-xl font-label-md text-label-md font-bold active:scale-95 transition-all neon-glow">
+            Iniciar sesión
+        </button>
+</header>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative min-h-[707px] flex flex-col items-center justify-center text-center px-container-margin hero-gradient">
+<div class="max-w-4xl mx-auto space-y-md">
+<div class="inline-flex items-center gap-xs bg-primary-container/10 border border-primary-container/20 px-sm py-1 rounded-full text-primary-container mb-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Impulsado por Inteligencia Artificial</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface balance">
+                    Tu entrenador <span class="text-primary-container">IA</span> personal
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    Algoritmos de vanguardia que diseñan rutinas de entrenamiento adaptativas basadas en tu biometría, objetivos y progreso en tiempo real. Entrena como un profesional.
+                </p>
+<div class="pt-lg flex flex-col md:flex-row gap-md justify-center items-center">
+<button class="w-full md:w-auto bg-primary-container text-on-primary px-xl py-md rounded-xl font-label-md text-label-md font-extrabold uppercase tracking-tight active:scale-95 transition-all neon-glow-strong">
+                        Comenzar gratis
+                    </button>
+<button class="w-full md:w-auto border-2 border-primary-container/30 text-primary-container backdrop-blur-sm px-xl py-md rounded-xl font-label-md text-label-md font-bold hover:bg-primary-container/10 active:scale-95 transition-all">
+                        Ver Demo
+                    </button>
+</div>
+</div>
+<!-- Hero Image Placeholder -->
+<div class="mt-xl w-full max-w-5xl rounded-2xl overflow-hidden glass-card p-xs neon-glow">
+<div class="aspect-video w-full rounded-xl overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A futuristic dark-themed fitness dashboard displaying glowing neon green and blue biometric data graphs, heart rate monitors, and 3D animated human muscular anatomy. The interface is sleek with glassmorphic elements and high-contrast typography, evoking a sense of high-performance digital training in a minimalist laboratory setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBks2y7sAOGKXi5tg6ar9yDalk3XfhclIFUKMq_ttxZG5GufUtxLGb2E_mcjQEeAynjxNn-6fEIeKSDbwNeGVgrLtXcBKo_TXDXWnJH6ttjik6tf5skyRZDL6276UctDgqMa6LWvqdFy-G84brRS28vGsL-QiMrD9Q_crt2AUCDhaJdUWDt9UoevGnudQoLGmn-rZ8XF1vUc9Z13e5YpQl-2VJgc8rRtWDbKeZjCXgzSIAhiid5w_c"/>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-xl px-container-margin max-w-7xl mx-auto" id="features">
+<div class="text-center mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Diseñado para el <span class="text-primary-container">Rendimiento</span></h2>
+<p class="text-on-surface-variant mt-sm">Tecnología de última generación al servicio de tu cuerpo.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Feature 1 -->
+<div class="glass-card p-md rounded-xl flex flex-col gap-sm group hover:border-primary-container/50 transition-all">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Algoritmo Adaptativo</h3>
+<p class="text-on-surface-variant">Rutinas que evolucionan contigo. RutinaIA analiza tu fatiga y rendimiento para ajustar el peso y repeticiones de tu próxima sesión.</p>
+</div>
+<!-- Feature 2 -->
+<div class="glass-card p-md rounded-xl flex flex-col gap-sm group hover:border-primary-container/50 transition-all">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="nutrition">nutrition</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Nutrición Inteligente</h3>
+<p class="text-on-surface-variant">Planes de alimentación sincronizados con tu gasto calórico real. Recetas optimizadas para tus objetivos de fuerza o pérdida de grasa.</p>
+</div>
+<!-- Feature 3 -->
+<div class="glass-card p-md rounded-xl flex flex-col gap-sm group hover:border-primary-container/50 transition-all">
+<div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Métricas en Vivo</h3>
+<p class="text-on-surface-variant">Visualiza tu progreso con gráficos de alta fidelidad. Seguimiento de volumen total, PRs y consistencia mensual.</p>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-xl px-container-margin bg-surface-container-lowest/50" id="pricing">
+<div class="max-w-4xl mx-auto">
+<div class="text-center mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Elige tu <span class="text-primary-container">Nivel</span></h2>
+<p class="text-on-surface-variant mt-sm">Sin contratos, cancela cuando quieras.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Basic Plan -->
+<div class="glass-card p-lg rounded-xl flex flex-col items-center text-center gap-md border-white/5">
+<div class="space-y-xs">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Esencial</span>
+<div class="flex items-baseline justify-center gap-1">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">$0</span>
+<span class="text-on-surface-variant">/siempre</span>
+</div>
+</div>
+<ul class="space-y-sm text-left w-full">
+<li class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="check_circle">check_circle</span>
+                                Rutinas base semanales
+                            </li>
+<li class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary-container" data-icon="check_circle">check_circle</span>
+                                Registro de ejercicios
+                            </li>
+<li class="flex items-center gap-sm text-on-surface-variant opacity-40">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span>
+                                IA Adaptativa
+                            </li>
+</ul>
+<button class="w-full border border-outline text-on-surface py-sm rounded-xl font-label-md text-label-md font-bold hover:bg-white/5 transition-colors">
+                            Empezar Gratis
+                        </button>
+</div>
+<!-- Premium Plan -->
+<div class="glass-card p-lg rounded-xl flex flex-col items-center text-center gap-md relative border-primary-container/30 neon-glow">
+<div class="absolute -top-4 bg-primary-container text-on-primary px-sm py-1 rounded-full font-label-sm text-label-sm font-bold">RECOMENDADO</div>
+<div class="space-y-xs">
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Atleta Pro</span>
+<div class="flex items-baseline justify-center gap-1">
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">$99</span>
+<span class="text-on-surface-variant">/mes</span>
+</div>
+</div>
+<ul class="space-y-sm text-left w-full">
+<li class="flex items-center gap-sm text-on-surface">
+<span class="material-symbols-outlined text-primary-container" data-icon="verified">verified</span>
+                                IA Adaptativa en tiempo real
+                            </li>
+<li class="flex items-center gap-sm text-on-surface">
+<span class="material-symbols-outlined text-primary-container" data-icon="verified">verified</span>
+                                Planes nutricionales dinámicos
+                            </li>
+<li class="flex items-center gap-sm text-on-surface">
+<span class="material-symbols-outlined text-primary-container" data-icon="verified">verified</span>
+                                Soporte prioritario 24/7
+                            </li>
+<li class="flex items-center gap-sm text-on-surface">
+<span class="material-symbols-outlined text-primary-container" data-icon="verified">verified</span>
+                                Análisis biomecánico por cámara
+                            </li>
+</ul>
+<button class="w-full bg-primary-container text-on-primary py-sm rounded-xl font-label-md text-label-md font-bold active:scale-95 transition-all">
+                            Suscribirme Ahora
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Final -->
+<section class="py-xl px-container-margin text-center">
+<div class="max-w-3xl mx-auto glass-card p-xl rounded-2xl space-y-md border-primary-container/10">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">¿Listo para transformar tu cuerpo?</h2>
+<p class="text-on-surface-variant">Únete a más de 50,000 atletas que ya están usando RutinaIA para superar sus límites.</p>
+<div class="flex justify-center">
+<button class="bg-primary-container text-on-primary px-xl py-md rounded-xl font-label-md text-label-md font-extrabold uppercase active:scale-95 transition-all neon-glow-strong">
+                        Crear mi cuenta
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-xl px-container-margin flex flex-col md:flex-row justify-between items-center gap-md bg-surface-container-lowest border-t border-outline-variant">
+<div class="flex flex-col gap-xs items-center md:items-start">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" data-icon="fitness_center">fitness_center</span>
+<span class="font-headline-md text-headline-md text-primary-container">RutinaIA</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">© 2024 RutinaIA. Engineered for performance.</p>
+</div>
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Términos</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Soporte</a>
+</div>
+<div class="flex gap-md">
+<a class="w-10 h-10 rounded-full flex items-center justify-center glass-card hover:text-primary-container transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="public">public</span>
+</a>
+<a class="w-10 h-10 rounded-full flex items-center justify-center glass-card hover:text-primary-container transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction for cards on mouse move
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+                
+                // Subtle lift effect
+                card.style.transform = 'translateY(-4px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body></html>

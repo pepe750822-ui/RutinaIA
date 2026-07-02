@@ -24,7 +24,7 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
     >
       <Card className="overflow-hidden">
         {/* Full-width image */}
-        <div className="relative w-full h-48 bg-[#00ff88]/5 overflow-hidden flex items-center justify-center">
+        <div className="relative w-full h-32 bg-[#00ff88]/5 overflow-hidden flex items-center justify-center">
           {imgUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

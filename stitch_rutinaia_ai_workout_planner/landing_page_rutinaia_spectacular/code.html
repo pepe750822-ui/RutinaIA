@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RutinaIA - Tu entrenador IA personal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500&family=Space+Grotesk:wght@500;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100..900&family=Montserrat:wght@100..900&family=Space+Grotesk:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#3c0090",
+                    "surface-tint": "#00e479",
+                    "on-background": "#dee1f7",
+                    "surface-bright": "#343949",
+                    "primary-fixed": "#60ff99",
+                    "on-secondary-fixed-variant": "#003fa4",
+                    "on-primary": "#003919",
+                    "on-secondary-container": "#f9f7ff",
+                    "secondary-fixed": "#dae1ff",
+                    "surface-container-highest": "#2f3445",
+                    "on-tertiary-container": "#7521ff",
+                    "on-secondary-fixed": "#001849",
+                    "tertiary-fixed-dim": "#d1bcff",
+                    "secondary-container": "#0266ff",
+                    "inverse-primary": "#006d37",
+                    "on-secondary": "#002b75",
+                    "tertiary-fixed": "#e9ddff",
+                    "surface-container-lowest": "#090e1c",
+                    "inverse-surface": "#dee1f7",
+                    "on-surface": "#dee1f7",
+                    "surface-container-low": "#161b2b",
+                    "secondary": "#b3c5ff",
+                    "surface-dim": "#0e1322",
+                    "outline": "#849585",
+                    "error-container": "#93000a",
+                    "on-surface-variant": "#b9cbb9",
+                    "on-primary-fixed": "#00210c",
+                    "primary-container": "#00ff88",
+                    "secondary-fixed-dim": "#b3c5ff",
+                    "tertiary": "#fff9ff",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-high": "#25293a",
+                    "error": "#ffb4ab",
+                    "surface": "#0e1322",
+                    "tertiary-container": "#e6d8ff",
+                    "outline-variant": "#3b4b3d",
+                    "on-tertiary-fixed": "#23005b",
+                    "on-primary-container": "#007139",
+                    "inverse-on-surface": "#2b3040",
+                    "surface-variant": "#2f3445",
+                    "surface-container": "#1a1f2f",
+                    "primary-fixed-dim": "#00e479",
+                    "background": "#0e1322",
+                    "on-primary-fixed-variant": "#005228",
+                    "on-tertiary-fixed-variant": "#5700c9",
+                    "on-error": "#690005",
+                    "primary": "#f1ffef"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "48px",
+                    "container-margin": "20px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "stack-md": "16px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "data-metric": ["Space Grotesk"],
+                    "display-lg": ["Montserrat"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "headline-md": ["Montserrat"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "data-metric": ["24px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "52px", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0a0f1e;
+            color: #dee1f7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dot-grid {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glow-green {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+        }
+
+        .cta-shadow {
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 70%);
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .ai-glow {
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .neon-border {
+            border-image: linear-gradient(to bottom right, rgba(255,255,255,0.2), rgba(255,255,255,0.05)) 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md min-h-screen relative">
+<!-- Background Elements -->
+<div class="fixed inset-0 dot-grid pointer-events-none opacity-30"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#0066ff] opacity-10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed top-[20%] left-[-10%] w-[40%] h-[40%] bg-primary-container opacity-5 blur-[100px] rounded-full pointer-events-none ai-glow"></div>
+<!-- Header / TopAppBar -->
+<header class="w-full top-0 sticky z-50 backdrop-blur-md bg-white/5 border-b border-white/10 flex justify-between items-center px-container-margin py-4">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md-mobile text-primary dark:text-primary-fixed tracking-tight">RutinaIA 🏋️</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95" data-icon="settings">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white/20 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-definition profile avatar of a fit user in a futuristic training suit, rendered in 3D with neon green highlights and soft volumetric lighting, set against a dark tech-inspired background with a clean professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1y7cOajWQ0Tw9d0J0ZS2WvOZxi0i_PN7p82ULoOAi0gMROzVnkcZQevINQAchGPPOZVyKEmC13BnVnAlervq-Y2aU9dgYH4vaDwcS9U7EuKMrbd0gMmyHN4RuclPEJXFTS0relb4g8azEIhBh0WEccztTcyAhgDVYikzzfKP2wH7GpAz9ZT35AI8ZveWw_ppvGr0aptRxZbZTQtxPqJlTTRhqQ37assyOgGLTx1Zbt3PnnSieRY0"/>
+</div>
+</div>
+</header>
+<main class="relative px-container-margin pt-stack-lg pb-section-gap flex flex-col items-center">
+<!-- Hero Section -->
+<section class="w-full flex flex-col items-center text-center">
+<!-- Hero Illustration -->
+<div class="relative w-full aspect-square max-w-[320px] mb-stack-md flex items-center justify-center">
+<div class="absolute inset-0 hero-gradient rounded-full"></div>
+<div class="relative z-10 w-full h-full glass-card rounded-full overflow-hidden border-primary-container/20 flex items-center justify-center p-8 glow-green">
+<img class="w-full h-full object-contain" data-alt="A stylized 3D high-tech illustration of an athletic person in a dynamic training pose, surrounded by holographic data interfaces and neon green energy circuits. The background is a deep navy space with subtle particle effects and glassmorphism elements, conveying a futuristic, AI-driven fitness environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGDYlM5hF7Nt0d8x1WPzKQ0K21dyKWoAGUm21THi928ewVrQ-Fia1PnS05mXqCN0o5bX--9gmLEM3ekPqrdFbHl_QjUmMOiIEU2ajKrVOD5tV_gxq1Obhazig4AcAwonZ05gXb9up7EpEN04zPYjgAQrDe2d2hliMDMWMeafabOP3LYI7A6D497Pzg9-rcgSPr3uIPVrmUoaH-_9kLAheOdBBNiUb6vcBMg77QCuELkVCdFz8FtXc"/>
+</div>
+<!-- Floating Decorative Chips -->
+<div class="absolute top-4 -right-4 glass-card px-3 py-1.5 rounded-full border-primary-container/30 flex items-center gap-2 animate-bounce transition-all duration-1000">
+<span class="material-symbols-outlined text-primary-container text-[16px]" data-icon="bolt">bolt</span>
+<span class="font-label-caps text-label-caps text-primary-fixed">OPTIMIZADO</span>
+</div>
+</div>
+<!-- Headlines -->
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background mb-stack-sm leading-tight">
+                Tu entrenador IA <br/>
+<span class="text-primary-container">personal</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[280px] mb-stack-lg">
+                Rutinas personalizadas con inteligencia artificial.
+            </p>
+<!-- CTA Button -->
+<button class="w-full max-w-[280px] bg-primary-container text-on-primary-container py-4 px-8 rounded-xl font-headline-md text-headline-md-mobile flex items-center justify-center gap-2 cta-shadow hover:brightness-110 active:scale-95 transition-all mb-section-gap">
+                Comenzar gratis
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</section>
+<!-- Bento Features / Bottom Section -->
+<section class="w-full grid grid-cols-2 gap-4">
+<div class="glass-card p-5 rounded-2xl col-span-2 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary-container/10 rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[32px]" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background leading-none">IA</h3>
+<p class="font-body-md text-on-surface-variant text-sm mt-1">Algoritmos de aprendizaje adaptativo</p>
+</div>
+</div>
+<div class="glass-card p-5 rounded-2xl flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-secondary-container text-[28px]" data-icon="fitness_center">fitness_center</span>
+<div>
+<h3 class="font-data-metric text-data-metric text-primary-fixed">1324</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">ejercicios</p>
+</div>
+</div>
+<div class="glass-card p-5 rounded-2xl flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[28px]" data-icon="monitoring">monitoring</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background">Progreso</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Seguimiento</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl backdrop-blur-xl border-t border-white/10 bg-surface-container-low/40 shadow-[0_-4px_20px_rgba(0,255,136,0.05)] flex justify-around items-center px-4 pb-6 pt-2">
+<a class="flex flex-col items-center justify-center bg-primary-container/20 text-primary-fixed rounded-xl px-4 py-2 shadow-[0_0_15px_rgba(0,255,136,0.25)] active:scale-110 duration-300 ease-out transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary-fixed/80 transition-colors active:scale-110 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-label-caps text-label-caps mt-1">Routines</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary-fixed/80 transition-colors active:scale-110 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span class="font-label-caps text-label-caps mt-1">Timer</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 p-2 hover:text-primary-fixed/80 transition-colors active:scale-110 duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-caps text-label-caps mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for the cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Simple mouse movement glow effect for desktop users
+        if (window.innerWidth > 768) {
+            document.body.addEventListener('mousemove', (e) => {
+                const x = e.clientX;
+                const y = e.clientY;
+                const glow = document.querySelector('.ai-glow');
+                if(glow) {
+                    glow.style.transform = `translate(${(x - window.innerWidth/2)/20}px, ${(y - window.innerHeight/2)/20}px)`;
+                }
+            });
+        }
+    </script>
+</body></html>

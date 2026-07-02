@@ -1,0 +1,6 @@
+{
+  "name": "RutinaIA",
+  "description": "Entrenador personal e inteligente impulsado por IA para diseñar rutinas adaptativas y optimizar el rendimiento físico.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

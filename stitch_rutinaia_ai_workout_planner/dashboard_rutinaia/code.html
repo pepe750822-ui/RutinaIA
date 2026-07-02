@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>RutinaIA - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#001849",
+                    "primary-fixed": "#60ff99",
+                    "tertiary": "#fffaf7",
+                    "secondary-fixed-dim": "#b3c5ff",
+                    "inverse-surface": "#dae6d8",
+                    "on-primary-container": "#007139",
+                    "error": "#ffb4ab",
+                    "secondary": "#b3c5ff",
+                    "inverse-on-surface": "#29332a",
+                    "surface-variant": "#2d372e",
+                    "on-tertiary-fixed-variant": "#584400",
+                    "on-tertiary-fixed": "#241a00",
+                    "secondary-fixed": "#dae1ff",
+                    "on-primary": "#003919",
+                    "background": "#0c160e",
+                    "on-error": "#690005",
+                    "surface-container-highest": "#2d372e",
+                    "on-secondary": "#002b75",
+                    "on-tertiary": "#3d2f00",
+                    "on-surface-variant": "#b9cbb9",
+                    "error-container": "#93000a",
+                    "primary-fixed-dim": "#00e479",
+                    "on-tertiary-container": "#795f01",
+                    "primary": "#f1ffef",
+                    "on-background": "#dae6d8",
+                    "outline": "#849585",
+                    "on-secondary-fixed-variant": "#003fa4",
+                    "surface-container": "#18221a",
+                    "surface-container-low": "#141e16",
+                    "tertiary-fixed": "#ffe08d",
+                    "outline-variant": "#3b4b3d",
+                    "on-surface": "#dae6d8",
+                    "surface-tint": "#00e479",
+                    "surface-bright": "#323c32",
+                    "surface-container-lowest": "#071009",
+                    "surface": "#0c160e",
+                    "secondary-container": "#0266ff",
+                    "on-primary-fixed-variant": "#005228",
+                    "surface-dim": "#0c160e",
+                    "surface-container-high": "#222c24",
+                    "on-primary-fixed": "#00210c",
+                    "tertiary-fixed-dim": "#e5c364",
+                    "on-error-container": "#ffdad6",
+                    "primary-container": "#00ff88",
+                    "on-secondary-container": "#f9f7ff",
+                    "inverse-primary": "#006d37"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "32px",
+                    "gutter": "16px",
+                    "base": "4px",
+                    "sm": "16px",
+                    "xl": "48px",
+                    "xs": "8px",
+                    "md": "24px",
+                    "container-margin": "20px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Montserrat"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .neon-glow-strong {
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #0066ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- Top AppBar Shell -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 28px;">fitness_center</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary-container tracking-tighter">RutinaIA</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container/30">
+<img class="w-full h-full object-cover" data-alt="A futuristic portrait of a professional athlete in a dark techwear outfit with glowing neon green accents, set against a dark laboratory background with high-contrast cinematic lighting and a digital interface overlay, establishing a highly advanced and energetic brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1yrVczHF0AeIEAEd8gL8MPoZ5TSNaC3xnr58GNm_jxW-QqJst06mUYF_5eTtBQcbYb6z_AD5pnMot-5e8r-XXiQ-v_CE3pHp7rrPMsW_YXUfNS0xxNbiU9YSbtseMhU0z7yMnY-723KwTL75R9W02lmEzaONc35Y4X8BBlc-aBVUb3XCfaUJuhQI3gvOfOOwLdYMXjkAh76-XvWmmRe6L4K4daZP5WwMVoIsYBIVJykfb2Nu9zPM"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-container-margin max-w-5xl mx-auto space-y-xl">
+<!-- Welcome Card -->
+<section class="glass-card rounded-xl p-md relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary-container/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h2 class="font-headline-md text-headline-md text-primary mb-base">¡Hola, Usuario!</h2>
+<p class="text-on-surface-variant font-body-md max-w-[280px]">Es hora de superar tus límites. Tu rutina personalizada está lista.</p>
+</div>
+</section>
+<!-- Main CTA Card -->
+<section>
+<button class="w-full relative group transition-transform active:scale-95 duration-200">
+<div class="absolute inset-0 bg-primary-container rounded-xl neon-glow blur-sm group-hover:neon-glow-strong transition-all duration-300"></div>
+<div class="relative flex items-center justify-between bg-primary-container text-on-primary p-md rounded-xl">
+<div class="text-left">
+<span class="font-label-md text-label-md uppercase tracking-widest opacity-80 mb-base block">IA de Alto Rendimiento</span>
+<h3 class="font-headline-md text-headline-md font-extrabold leading-tight">Generar nueva rutina</h3>
+</div>
+<span class="material-symbols-outlined bg-on-primary/10 p-sm rounded-full" style="font-size: 40px;">bolt</span>
+</div>
+</button>
+</section>
+<!-- Stats Bento Grid -->
+<section class="grid grid-cols-2 gap-md">
+<div class="glass-card rounded-xl p-md flex flex-col justify-between aspect-square">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-secondary" style="font-size: 24px;">task_alt</span>
+<span class="text-[10px] font-label-md text-on-surface-variant bg-white/5 px-2 py-0.5 rounded-full">+12%</span>
+</div>
+<div>
+<p class="font-display-lg text-display-lg text-primary leading-none">24</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Rutinas completadas</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-md flex flex-col justify-between aspect-square">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 24px;">local_fire_department</span>
+</div>
+<div>
+<p class="font-display-lg text-display-lg text-primary-container leading-none">7</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Racha actual (días)</p>
+</div>
+</div>
+</section>
+<!-- Recent Routines -->
+<section>
+<div class="flex justify-between items-end mb-md">
+<h4 class="font-headline-md text-headline-md">Rutinas recientes</h4>
+<button class="text-primary-fixed font-label-md text-label-md hover:underline">Ver todas</button>
+</div>
+<div class="space-y-md">
+<!-- Routine Item 1 -->
+<div class="glass-card p-sm rounded-xl flex items-center gap-md group hover:bg-white/5 transition-colors duration-300">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a chrome dumbbell on a dark rubber gym floor, illuminated by a single sharp beam of neon blue light. The image captures the textures of the metal and the high-energy, dark athletic atmosphere of a premium modern training facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-2qfdkPJoZ3J-lJsVH3Mokwqsx8JmMhOrwWBXsiHkmrSuUZ2D_VUS2GN1LmdUFqFpH-SWYYit6k5WTfFRfraYpXcnNuaNN_3dIO9mYfB-5YsrSVgG_3xmxYb7lKJCxZL8SeX92dx1JChKMDandfBRTO08HgSPmJa8n3gtOjJW3psHydR1QWflYjH0N3iSaGPMKDTCg3hjmNdoQ1N6qKsdYqkRymOzUaKMe1JjdBV6flNcS8eFNcg"/>
+</div>
+<div class="flex-grow">
+<h5 class="font-label-md text-label-md text-primary">Hipertrofia de Pecho</h5>
+<div class="flex items-center gap-xs mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Lunes • 45 min</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-container transition-colors">play_circle</span>
+</div>
+<!-- Routine Item 2 -->
+<div class="glass-card p-sm rounded-xl flex items-center gap-md group hover:bg-white/5 transition-colors duration-300">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sleek black high-tech treadmill in a dimly lit fitness studio. The background is blurred with streaks of neon green light representing speed and momentum. The overall mood is focused, futuristic, and professional, perfectly fitting a performance-oriented fitness app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYW3h5ioeNGVpCq_LxGxIuqh6XLAxoWs-STbs6XdMmIdu7BtZSAAaWza2dqch1MKCHXNE1tFnhxU4gywvYsdSf-XI1sJfObmmC3HV9crxEzONo7fcYlXi5HF2uc7o5t-yYgB0EfEMvspzlw6BKYuaA4-hpDnuheK1yfuyzBWHdbcZcjZaSUFUSeMxrhSYo8FSvd9fBV8iNMYoD13L1g2yGv10lt1lw1dPckSVaqIRdPeqcJtvpn3k"/>
+</div>
+<div class="flex-grow">
+<h5 class="font-label-md text-label-md text-primary">Cardio HIIT Explosivo</h5>
+<div class="flex items-center gap-xs mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ayer • 20 min</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-container transition-colors">play_circle</span>
+</div>
+<!-- Routine Item 3 -->
+<div class="glass-card p-sm rounded-xl flex items-center gap-md group hover:bg-white/5 transition-colors duration-300">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="An abstract artistic shot of a heavy steel kettlebell in a minimalist workout space. Deep navy shadows contrast with a sharp neon green glow hitting the edge of the kettlebell. The atmosphere is quiet yet intense, suggesting a state-of-the-art laboratory for athletic development." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_7fouWUhRSc4Rg6yJwLKoQ48YEumLt0uqAJfyc5dBThSMMC1S0BvRSTyOJOgkv2XOgGocshfdEcUhevKiDaaW470jvZqQ8iIX3gk738gv5q-hooINUhQ170Vv6BhTlJ0EdCE1On0jfpNP5mLg6GSObCGUOxpIKwdXNo3tubk48iHg10iy3o1Yji5p_pjV3oLY3eX-FlYa6UUKjwcQ2vxwdG-LasRnvwUdlWWmEik_YfemIiF5NCk"/>
+</div>
+<div class="flex-grow">
+<h5 class="font-label-md text-label-md text-primary">Fuerza Funcional IA</h5>
+<div class="flex items-center gap-xs mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">29 Oct • 60 min</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary-container transition-colors">play_circle</span>
+</div>
+</div>
+</section>
+<!-- Weekly Progress Shader Visualization -->
+<section class="h-48 glass-card rounded-xl overflow-hidden relative p-md flex flex-col justify-end">
+
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-primary-fixed mb-xs">Rendimiento semanal</p>
+<div class="flex items-end gap-2 h-16">
+<div class="flex-1 bg-primary-container/20 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary-container/40 h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary-container/30 h-[80%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary-container/60 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary-container h-full rounded-t-sm neon-glow"></div>
+<div class="flex-1 bg-primary-container/10 h-[20%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary-container/10 h-[20%] rounded-t-sm"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-background/40 backdrop-blur-lg border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.5)] rounded-t-xl">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-xl px-4 py-1 shadow-[0_0_10px_rgba(0,255,136,0.3)] transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+<!-- Routines -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-sm text-label-sm mt-1">Routines</span>
+</a>
+<!-- Stats -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-sm text-label-sm mt-1">Stats</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for glass cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Pulsing animation for the main CTA glow
+        const ctaGlow = document.querySelector('.group-hover\\:neon-glow-strong');
+        let scale = 1;
+        let growing = true;
+        
+        function pulse() {
+            if (growing) {
+                scale += 0.002;
+                if (scale >= 1.05) growing = false;
+            } else {
+                scale -= 0.002;
+                if (scale <= 0.95) growing = true;
+            }
+            // Selective pulse to emphasize energy
+            requestAnimationFrame(pulse);
+        }
+        pulse();
+    </script>
+</body></html>
