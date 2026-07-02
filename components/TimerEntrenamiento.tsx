@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { SkipForward, CheckCircle, ChevronLeft, Pause, Play, Plus } from "lucide-react"
@@ -60,10 +60,158 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const [opcionCardio, setOpcionCardio] = useState<number | null>(null)
   const [enfriamientoIniciado, setEnfriamientoIniciado] = useState(false)
 
+  // ── Audio / Notification refs ──────────────────────────────────────────
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const swRegRef = useRef<ServiceWorkerRegistration | null>(null)
+  const prevFaseRef = useRef<string>("")
+  const prevModoRef = useRef<string>("")
+
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
   const total = ejercicios.length
 
+  // ── Audio helpers ──────────────────────────────────────────────────────
+  const getCtx = useCallback((): AudioContext | null => {
+    if (typeof window === "undefined") return null
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+        )()
+      }
+      if (audioCtxRef.current.state === "suspended") {
+        audioCtxRef.current.resume().catch(() => {})
+      }
+      return audioCtxRef.current
+    } catch { return null }
+  }, [])
+
+  const playTone = useCallback((
+    freq: number, dur: number, vol = 0.3, delay = 0, type: OscillatorType = "sine"
+  ) => {
+    const ctx = getCtx()
+    if (!ctx) return
+    try {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = type
+      osc.frequency.value = freq
+      const t = ctx.currentTime + delay
+      gain.gain.setValueAtTime(vol, t)
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + dur)
+      osc.start(t)
+      osc.stop(t + dur + 0.01)
+    } catch {}
+  }, [getCtx])
+
+  // Beep agudo corto — inicio de ejercicio
+  const soundExerciseStart = useCallback(() => playTone(880, 0.15, 0.4), [playTone])
+  // Tick — últimos 3 segundos
+  const soundCountdown = useCallback(() => playTone(660, 0.08, 0.35, 0, "square"), [playTone])
+  // Do-Mi-Sol — fin de timer
+  const soundPhaseEnd = useCallback(() => {
+    playTone(523, 0.12, 0.4, 0)
+    playTone(659, 0.12, 0.4, 0.14)
+    playTone(784, 0.22, 0.5, 0.28)
+  }, [playTone])
+  // Tono suave — cambio de fase
+  const soundPhaseChange = useCallback(() => playTone(440, 0.25, 0.18), [playTone])
+  // Melodía de victoria — C-E-G-C
+  const soundVictory = useCallback(() => {
+    playTone(523, 0.12, 0.5, 0)
+    playTone(659, 0.12, 0.5, 0.16)
+    playTone(784, 0.12, 0.5, 0.32)
+    playTone(1047, 0.5, 0.6, 0.50)
+  }, [playTone])
+
+  // ── Vibración ──────────────────────────────────────────────────────────
+  const vibrate = useCallback((pattern: number | number[]) => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      try { navigator.vibrate(pattern) } catch {}
+    }
+  }, [])
+
+  // ── Notificaciones ─────────────────────────────────────────────────────
+  const sendNotif = useCallback((title: string, body: string) => {
+    if (typeof window === "undefined" || !("Notification" in window)) return
+    if (Notification.permission !== "granted") return
+    try {
+      if (swRegRef.current) {
+        swRegRef.current.showNotification(title, { body, silent: false })
+      } else {
+        new Notification(title, { body })
+      }
+    } catch {}
+  }, [])
+
+  // Solicitar permiso y registrar SW al montar
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {})
+    }
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then(reg => {
+        swRegRef.current = reg
+      }).catch(() => {})
+    }
+  }, [])
+
+  // Sonidos en los últimos 3 segundos + aviso 10 segundos
+  useEffect(() => {
+    if (!isRunning || timeLeft <= 0) return
+    if (timeLeft <= 3 && maxTime > 3) soundCountdown()
+    if (timeLeft === 10 && maxTime > 10) {
+      sendNotif("🔔 10 segundos restantes", "Prepárate para el cambio de fase")
+      vibrate(100)
+    }
+  }, [timeLeft, isRunning, maxTime, soundCountdown, sendNotif, vibrate])
+
+  // Sonidos al cambiar de fase dentro de la rutina
+  useEffect(() => {
+    if (modoFlujo !== "rutina") return
+    if (!prevFaseRef.current) { prevFaseRef.current = fase; return }
+    if (prevFaseRef.current === fase) return
+    prevFaseRef.current = fase
+    vibrate(200)
+    switch (fase) {
+      case "ejercicio":
+        soundExerciseStart()
+        sendNotif("💪 ¡A ejercitar!", current?.exercise?.name ?? "Ejercicio")
+        break
+      case "registro":
+        soundPhaseEnd()
+        sendNotif("⏱️ ¡Tiempo!", "Listo para el siguiente ejercicio")
+        break
+      case "descanso":
+        soundPhaseChange()
+        sendNotif("⏱️ ¡Descanso!", `Descansa ${current?.restSeconds ?? 60}s`)
+        break
+    }
+  }, [fase, modoFlujo, vibrate, soundExerciseStart, soundPhaseEnd, soundPhaseChange, sendNotif, current])
+
+  // Sonidos al cambiar de modo (calentamiento → rutina → cardio → enfriamiento)
+  useEffect(() => {
+    if (!prevModoRef.current) { prevModoRef.current = modoFlujo; return }
+    if (prevModoRef.current === modoFlujo) return
+    prevModoRef.current = modoFlujo
+    vibrate(200)
+    if (modoFlujo === "rutina") {
+      prevFaseRef.current = "" // reinicia detección de fases
+      soundPhaseChange()
+    } else if (modoFlujo === "cardio_final") {
+      soundPhaseEnd()
+      sendNotif("⏱️ ¡Rutina completada!", "Hora del cardio de cierre 🏃")
+    } else if (modoFlujo === "enfriamiento") {
+      soundPhaseChange()
+      sendNotif("⏱️ ¡Cardio listo!", "Tiempo de enfriar ❄️")
+    }
+  }, [modoFlujo, vibrate, soundPhaseEnd, soundPhaseChange, sendNotif])
+
+  // ── Core logic ─────────────────────────────────────────────────────────
   const goToFase = useCallback((f: Fase, seconds: number) => {
     setFase(f)
     setTimeLeft(seconds)
@@ -116,7 +264,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     return () => clearInterval(id)
   }, [isRunning, timeLeft])
 
-  // Fin de timer para la rutina
+  // Fin de timer — rutina
   useEffect(() => {
     if (modoFlujo !== "rutina") return
     if (timeLeft > 0) return
@@ -140,11 +288,21 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     }
   }, [timeLeft, fase, currentIndex, total, current, goToFase, setsCount, setsLog.length, modoFlujo])
 
-  // Fin de timer para fases extra (solo para)
+  // Fin de timer — fases extra (calentamiento / cardio / enfriamiento)
   useEffect(() => {
     if (modoFlujo === "rutina") return
-    if (timeLeft <= 0 && isRunning) setIsRunning(false)
-  }, [timeLeft, isRunning, modoFlujo])
+    if (timeLeft <= 0 && isRunning) {
+      setIsRunning(false)
+      soundPhaseEnd()
+      vibrate([100, 50, 100])
+      const titles: Partial<Record<ModoFlujo, string>> = {
+        calentamiento: "🔥 ¡Calentamiento completo!",
+        cardio_final: "🏃 ¡Cardio completado!",
+        enfriamiento: "❄️ ¡Enfriamiento listo!",
+      }
+      sendNotif(titles[modoFlujo] ?? "⏱️ ¡Tiempo!", "Continúa con el siguiente paso")
+    }
+  }, [timeLeft, isRunning, modoFlujo, soundPhaseEnd, vibrate, sendNotif])
 
   const guardarSet = async () => {
     if (!sesionId) return
@@ -404,7 +562,12 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
           )}
 
           <Button
-            onClick={() => { setCompleted(true); onComplete(sesionId ?? undefined) }}
+            onClick={() => {
+              soundVictory()
+              vibrate([100, 50, 100, 50, 200])
+              setCompleted(true)
+              onComplete(sesionId ?? undefined)
+            }}
             className="w-full h-12 rounded-xl bg-[#00ff88] text-[#0a0f1e] font-bold text-base hover:bg-[#00ff88]/90"
           >
             ✓ Finalizar entrenamiento
