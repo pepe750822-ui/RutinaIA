@@ -585,7 +585,32 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             </div>
             <Button
               className="w-full sm:w-auto rounded-xl bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold"
-              onClick={() => rutina?.id && router.push(`/rutina/${rutina.id}`)}
+              onClick={async () => {
+                if (rutina?.id) {
+                  router.push(`/rutina/${rutina.id}`)
+                } else {
+                  setError("")
+                  try {
+                    const res = await fetch("/api/save-rutina", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        nombre: rutina?.nombre,
+                        objetivo: "",
+                        nivel: "",
+                        ejercicios: rutina?.ejercicios,
+                        dias: rutina?.dias,
+                        duracion_minutos: rutina?.duracion_minutos,
+                      }),
+                    })
+                    const data = await res.json()
+                    if (data.id) router.push(`/rutina/${data.id}`)
+                    else setError(data.error || "Error al guardar")
+                  } catch {
+                    setError("Error al guardar la rutina")
+                  }
+                }
+              }}
             >
               {rutina?.id ? "Ver rutina guardada" : "Guardar rutina"}
             </Button>

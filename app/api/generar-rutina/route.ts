@@ -131,21 +131,31 @@ export async function POST(request: Request) {
     let rutinaId: string | undefined;
 
     if (supabase && user) {
+      const insertData: Record<string, unknown> = {
+        user_id: user.id,
+        nombre: result.nombre,
+        objetivo,
+        nivel,
+        ejercicios: result.ejercicios,
+        duracion_minutos: result.duracion_minutos,
+      };
+      if (result.dias) insertData.dias = result.dias;
+
       const { data: rutina, error } = await supabase
         .from("rutinas")
-        .insert({
-          user_id: user.id,
-          nombre: result.nombre,
-          objetivo,
-          nivel,
-          ejercicios: result.ejercicios,
-          dias: result.dias,
-          duracion_minutos: result.duracion_minutos,
-        })
+        .insert(insertData)
         .select("id")
         .single();
 
-      if (!error && rutina) {
+      if (error && result.dias) {
+        delete insertData.dias;
+        const { data: retry } = await supabase
+          .from("rutinas")
+          .insert(insertData)
+          .select("id")
+          .single();
+        if (retry) rutinaId = retry.id;
+      } else if (!error && rutina) {
         rutinaId = rutina.id;
       }
 
