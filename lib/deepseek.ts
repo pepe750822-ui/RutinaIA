@@ -89,8 +89,8 @@ export async function generarRutinaConIA(
   const ejerciciosMap = new Map(ejercicios.map((e) => [e.id, e]));
 
   const rutinaEjercicios: RutinaEjercicio[] = parsed.ejercicios
-    .filter((ej: any) => ejerciciosMap.has(ej.exerciseId))
-    .map((ej: any) => ({
+    .filter((ej: { exerciseId: string }) => ejerciciosMap.has(ej.exerciseId))
+    .map((ej: { exerciseId: string; sets: number; reps: number; restSeconds: number; order: number }) => ({
       exercise: ejerciciosMap.get(ej.exerciseId)!,
       sets: ej.sets,
       reps: ej.reps,

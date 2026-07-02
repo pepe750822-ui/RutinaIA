@@ -1,18 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import RutinaGenerator from "@/components/RutinaGenerator";
-import { Exercise, RutinaEjercicio } from "@/types";
-import { getAllExercises } from "@/lib/exercises";
 
 export default function NuevaRutinaPage() {
-  const [ejercicios, setEjercicios] = useState<Exercise[]>([]);
-
-  useEffect(() => {
-    getAllExercises().then(setEjercicios);
-  }, []);
-
   const handleGenerate = async (form: {
     objetivo: string;
     nivel: string;
@@ -53,7 +44,7 @@ export default function NuevaRutinaPage() {
         </p>
       </div>
 
-      <RutinaGenerator ejercicios={ejercicios} onGenerate={handleGenerate} />
+      <RutinaGenerator onGenerate={handleGenerate} />
     </motion.div>
   );
 }

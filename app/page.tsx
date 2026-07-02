@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dumbbell, Sparkles, BarChart3, Infinity, Zap, Check } from "lucide-react";
+import { Dumbbell, Sparkles, BarChart3, Zap, Check } from "lucide-react";
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },

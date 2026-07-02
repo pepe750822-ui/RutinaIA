@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, Sparkles, Flame, Calendar, ArrowRight } from "lucide-react";
+import { Dumbbell, Sparkles, Flame, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {

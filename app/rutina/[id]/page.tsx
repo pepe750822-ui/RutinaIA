@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import EjercicioCard from "@/components/EjercicioCard";
+import { Card, CardContent } from "@/components/ui/card";
 import TimerEntrenamiento from "@/components/TimerEntrenamiento";
 import { Play, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { Rutina, RutinaEjercicio } from "@/types";
+import { Rutina } from "@/types";
 
 // Mock data — se reemplazará con datos reales de Supabase
 const MOCK_RUTINA: Rutina = {
@@ -25,7 +23,6 @@ const MOCK_RUTINA: Rutina = {
 };
 
 export default function RutinaDetallePage() {
-  const params = useParams();
   const [modoEntrenamiento, setModoEntrenamiento] = useState(false);
 
   const handleComplete = () => {

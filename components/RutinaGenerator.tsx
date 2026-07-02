@@ -8,10 +8,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, Dumbbell } from "lucide-react"
 import EjercicioCard from "./EjercicioCard"
-import { RutinaEjercicio, Exercise } from "@/types"
+import { RutinaEjercicio } from "@/types"
 
 interface Props {
-  ejercicios: Exercise[]
   onGenerate: (data: FormData) => Promise<{
     nombre: string
     duracion_minutos: number
@@ -27,7 +26,7 @@ interface FormData {
   musculos: string
 }
 
-export default function RutinaGenerator({ ejercicios, onGenerate }: Props) {
+export default function RutinaGenerator({ onGenerate }: Props) {
   const [form, setForm] = useState<FormData>({
     objetivo: "",
     nivel: "principiante",
@@ -55,8 +54,8 @@ export default function RutinaGenerator({ ejercicios, onGenerate }: Props) {
     try {
       const result = await onGenerate(form)
       if (result) setRutina(result)
-    } catch (e: any) {
-      setError(e.message || "Error al generar rutina")
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Error al generar rutina")
     } finally {
       setLoading(false)
     }

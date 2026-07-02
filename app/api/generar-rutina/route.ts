@@ -40,10 +40,10 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error generando rutina:", error);
     return NextResponse.json(
-      { error: error.message || "Error al generar la rutina" },
+      { error: error instanceof Error ? error.message : "Error al generar la rutina" },
       { status: 500 }
     );
   }
