@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import { RutinaEjercicio } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
-import { getExerciseImageUrlByName } from "@/lib/images"
+import { getExerciseImageFallbacks, getPlaceholderSvg } from "@/lib/images"
 
 const TR: Record<string, string> = {
   abs: "Abdominales",
@@ -75,10 +75,33 @@ interface Props {
   index: number
 }
 
+function ExerciseImage({ name }: { name: string }) {
+  const urls = getExerciseImageFallbacks(name)
+  const [imgSrc, setImgSrc] = useState<string | null>(urls[0] || null)
+  const [fallbackIdx, setFallbackIdx] = useState(0)
+  const svgPlaceholder = getPlaceholderSvg(name)
+
+  const handleError = () => {
+    const next = fallbackIdx + 1
+    if (next < urls.length) {
+      setFallbackIdx(next)
+      setImgSrc(urls[next])
+    } else {
+      setImgSrc(null)
+    }
+  }
+
+  // eslint-disable-next-line @next/next/no-img-element
+  return imgSrc ? (
+    <img src={imgSrc} alt={name} className="w-full h-full object-cover" onError={handleError} />
+  ) : (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={svgPlaceholder} alt={name} className="w-full h-full object-cover" />
+  )
+}
+
 export default function EjercicioCard({ ejercicio, index }: Props) {
   const { exercise, sets, reps, restSeconds } = ejercicio
-  const imgUrl = getExerciseImageUrlByName(exercise.name)
-  const [imgError, setImgError] = useState(false)
 
   return (
     <motion.div
@@ -88,17 +111,7 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
     >
       <Card className="overflow-hidden">
         <div className="relative w-full h-32 bg-[#00ff88]/5 overflow-hidden flex items-center justify-center">
-          {imgUrl && !imgError ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imgUrl}
-              alt={exercise.name}
-              className="w-full h-full object-cover"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <span className="text-6xl">🏋️</span>
-          )}
+          <ExerciseImage name={exercise.name} />
           <span className="absolute top-2 left-2 text-[9px] font-bold bg-black/60 text-white/60 px-2 py-0.5 rounded uppercase tracking-wider">
             #{index + 1}
           </span>

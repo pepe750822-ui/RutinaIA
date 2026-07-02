@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { SkipForward, CheckCircle, ChevronLeft, Pause, Play } from "lucide-react"
 import { RutinaEjercicio } from "@/types"
-import { getExerciseImageUrlByName } from "@/lib/images"
+import { getExerciseImageFallbacks, getPlaceholderSvg } from "@/lib/images"
 
 interface Props {
   ejercicios: RutinaEjercicio[]
@@ -29,12 +29,11 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const [maxTime, setMaxTime] = useState(PREP_SECONDS)
   const [isRunning, setIsRunning] = useState(true)
   const [completed, setCompleted] = useState(false)
-  const [imgError, setImgError] = useState(false)
+  const [imgSrc, setImgSrc] = useState<string | null>(null)
 
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
   const total = ejercicios.length
-  const imgUrl = getExerciseImageUrlByName(current?.exercise?.name)
 
   const goToFase = useCallback((f: Fase, seconds: number) => {
     setFase(f)
@@ -44,8 +43,11 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   }, [])
 
   useEffect(() => {
-    if (current) goToFase("preparacion", PREP_SECONDS)
-    setImgError(false)
+    if (current) {
+      goToFase("preparacion", PREP_SECONDS)
+      const urls = getExerciseImageFallbacks(current?.exercise?.name)
+      setImgSrc(urls[0] || null)
+    }
   }, [currentIndex, current, goToFase])
 
   useEffect(() => {
@@ -134,16 +136,22 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
 
         {/* Exercise image */}
         <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-white/5">
-          {imgUrl && !imgError ? (
+          {imgSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={imgUrl}
+              src={imgSrc}
               alt={current?.exercise?.name}
               className="w-full h-full object-cover"
-              onError={() => setImgError(true)}
+              onError={() => {
+                const urls = getExerciseImageFallbacks(current?.exercise?.name)
+                const idx = urls.indexOf(imgSrc)
+                if (idx >= 0 && idx + 1 < urls.length) setImgSrc(urls[idx + 1])
+                else setImgSrc(null)
+              }}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-5xl">🏋️</div>
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={getPlaceholderSvg(current?.exercise?.name || "")} alt="" className="w-full h-full object-cover" />
           )}
           {next && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
