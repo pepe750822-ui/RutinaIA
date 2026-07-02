@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { SkipForward, CheckCircle, ChevronLeft, Pause, Play } from "lucide-react"
 import { RutinaEjercicio } from "@/types"
-import { getExerciseImageUrl } from "@/lib/images"
+import { getExerciseImageUrlByName } from "@/lib/images"
 
 interface Props {
   ejercicios: RutinaEjercicio[]
@@ -34,7 +34,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
   const total = ejercicios.length
-  const imgUrl = getExerciseImageUrl(current?.exercise?.media_id)
+  const imgUrl = getExerciseImageUrlByName(current?.exercise?.name)
 
   const goToFase = useCallback((f: Fase, seconds: number) => {
     setFase(f)

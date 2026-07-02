@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dumbbell, Sparkles, Zap, ChevronRight, Play, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
-import { getExerciseImageUrl } from "@/lib/images";
+import { getExerciseImageUrlByName } from "@/lib/images";
 
 interface RutinaEjDB {
   exercise: { media_id?: string | null; name: string };
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                         <div className="w-20 h-20 rounded-xl bg-[#00ff88]/10 flex items-center justify-center shrink-0 overflow-hidden">
                           {(() => {
                             const ej = r.ejercicios?.[0];
-                            const imgUrl = ej ? getExerciseImageUrl(ej.exercise?.media_id) : null;
+                            const imgUrl = ej ? getExerciseImageUrlByName(ej.exercise?.name) : null;
                             return imgUrl ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={imgUrl} alt="" className="w-full h-full object-cover" />
