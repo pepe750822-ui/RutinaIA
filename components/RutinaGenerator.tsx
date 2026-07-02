@@ -42,11 +42,11 @@ const defaultForm: RutinaGeneratorForm = {
 const sections = [
   { step: 0, title: "Lugar de entrenamiento", subtitle: "¿Dónde vas a entrenar?" },
   { step: 1, title: "Objetivos", subtitle: "¿Qué quieres lograr?" },
-  { step: 1, title: "Nivel y experiencia", subtitle: "Cuéntanos tu experiencia" },
-  { step: 2, title: "Datos personales", subtitle: "Información básica" },
-  { step: 3, title: "Condición física", subtitle: "Salud y lesiones" },
-  { step: 4, title: "Preferencias", subtitle: "Disponibilidad y equipo" },
-  { step: 5, title: "Musculatura", subtitle: "Grupos a trabajar" },
+  { step: 2, title: "Nivel y experiencia", subtitle: "Cuéntanos tu experiencia" },
+  { step: 3, title: "Datos personales", subtitle: "Información básica" },
+  { step: 4, title: "Condición física", subtitle: "Salud y lesiones" },
+  { step: 5, title: "Preferencias", subtitle: "Disponibilidad y equipo" },
+  { step: 6, title: "Musculatura", subtitle: "Grupos a trabajar" },
 ]
 
 function OptionGroup({
