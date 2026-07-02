@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dumbbell, Sparkles, BarChart3, Zap, Check } from "lucide-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -67,6 +69,18 @@ const plans = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter()
+
+  async function handleCTA() {
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      router.push("/login")
+      return
+    }
+    const { data: { session } } = await supabase.auth.getSession()
+    router.push(session ? "/app" : "/login")
+  }
+
   return (
     <>
       <Navbar />
@@ -104,11 +118,9 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/app">
-              <Button size="lg" className="w-full sm:w-auto text-lg px-8">
-                Comenzar gratis
-              </Button>
-            </Link>
+            <Button size="lg" className="w-full sm:w-auto text-lg px-8" onClick={handleCTA}>
+              Comenzar gratis
+            </Button>
             <Link href="#features">
               <Button variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8">
                 Conocer más
@@ -206,14 +218,13 @@ export default function LandingPage() {
                         </li>
                       ))}
                     </ul>
-                    <Link href={plan.href}>
-                      <Button
-                        variant={plan.featured ? "default" : "outline"}
-                        className="w-full"
-                      >
-                        {plan.cta}
-                      </Button>
-                    </Link>
+                    <Button
+                      variant={plan.featured ? "default" : "outline"}
+                      className="w-full"
+                      onClick={handleCTA}
+                    >
+                      {plan.cta}
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
