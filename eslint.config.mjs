@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "src/**",
+      "stitch_rutinaia_ai_workout_planner/**",
     ],
   },
 ];

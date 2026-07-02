@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dumbbell, Sparkles, BarChart3, Zap, Check, Cpu, UtensilsCrossed } from "lucide-react";
+import { Dumbbell, BarChart3, Zap, Check, Cpu, UtensilsCrossed } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const fadeUp = {
