@@ -56,14 +56,15 @@ export default function RutinaDetallePage() {
     load();
   }, [params.id]);
 
-  const handleComplete = async () => {
+  const handleComplete = async (sesionId?: string) => {
     const supabase = getSupabaseBrowserClient();
     if (supabase && rutina) {
-      await supabase.from("ejercicios_completados").insert({
-        user_id: rutina.user_id,
-        rutina_id: rutina.id,
-        duracion_min: rutina.duracion_minutos,
-      } as never);
+      if (sesionId) {
+        await supabase
+          .from("sesiones")
+          .update({ fin: new Date().toISOString(), duracion_min: rutina.duracion_minutos })
+          .eq("id", sesionId);
+      }
       await supabase
         .from("rutinas")
         .update({ completada: true } as never)

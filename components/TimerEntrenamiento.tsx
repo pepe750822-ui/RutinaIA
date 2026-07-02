@@ -3,23 +3,26 @@
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { SkipForward, CheckCircle, ChevronLeft, Pause, Play } from "lucide-react"
+import { SkipForward, CheckCircle, ChevronLeft, Pause, Play, Plus } from "lucide-react"
 import { RutinaEjercicio } from "@/types"
 import { getExerciseImageFallbacks, getPlaceholderSvg } from "@/lib/images"
+import { getSupabaseBrowserClient } from "@/lib/supabase"
 
 interface Props {
   ejercicios: RutinaEjercicio[]
-  onComplete: () => void
+  onComplete: (sesionId?: string) => void
 }
 
-type Fase = "preparacion" | "ejercicio" | "descanso"
+type Fase = "preparacion" | "ejercicio" | "registro" | "descanso"
 
 const FASE_LABEL: Record<Fase, string> = {
   preparacion: "Preparación",
   ejercicio: "Ejercicio",
+  registro: "Registro",
   descanso: "Descanso",
 }
 
+const RPE_BUTTONS = [6, 7, 8, 9, 10]
 const PREP_SECONDS = 10
 
 export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
@@ -31,6 +34,12 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const [completed, setCompleted] = useState(false)
   const [imgSrc, setImgSrc] = useState<string | null>(null)
   const [videoSrc, setVideoSrc] = useState<string | null>(null)
+  const [sesionId, setSesionId] = useState<string | null>(null)
+  const [setsCount, setSetsCount] = useState(1)
+  const [setsLog, setSetsLog] = useState<{ peso: number; reps: number; rpe: number }[]>([])
+  const [logPeso, setLogPeso] = useState(0)
+  const [logReps, setLogReps] = useState(0)
+  const [logRpe, setLogRpe] = useState(6)
 
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
@@ -43,10 +52,32 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     setIsRunning(true)
   }, [])
 
+  // Create session on mount
+  useEffect(() => {
+    async function init() {
+      const supabase = getSupabaseBrowserClient()
+      if (!supabase) return
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from("sesiones")
+        .insert({ user_id: user.id, nombre: "Entrenamiento" })
+        .select("id")
+        .single() as unknown as { data: { id: string } | null }
+      if (data?.id) setSesionId(data.id)
+    }
+    init()
+  }, [])
+
   useEffect(() => {
     if (current) {
       goToFase("preparacion", PREP_SECONDS)
       setVideoSrc(null)
+      setSetsLog([])
+      setSetsCount(1)
+      setLogPeso(0)
+      setLogReps(current?.reps || 10)
+      setLogRpe(7)
       const name = current?.exercise?.name
       const urls = getExerciseImageFallbacks(name)
       setImgSrc(urls[0] || null)
@@ -72,20 +103,62 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
     if (fase === "preparacion") {
       goToFase("ejercicio", 60)
     } else if (fase === "ejercicio") {
-      goToFase("descanso", current?.restSeconds || 60)
-    } else {
-      if (currentIndex < total - 1) {
-        setCurrentIndex((i) => i + 1)
+      goToFase("registro", 9999)
+    } else if (fase === "descanso") {
+      if (setsCount <= current?.sets && setsLog.length < current?.sets) {
+        goToFase("ejercicio", 60)
       } else {
-        setCompleted(true)
-        onComplete()
+        if (currentIndex < total - 1) {
+          setCurrentIndex((i) => i + 1)
+        } else {
+          setCompleted(true)
+          onComplete(sesionId ?? undefined)
+        }
       }
     }
-  }, [timeLeft, fase, currentIndex, total, current, goToFase, onComplete])
+  }, [timeLeft, fase, currentIndex, total, current, goToFase, onComplete, setsCount, setsLog.length, sesionId])
 
-  const skip = () => { setTimeLeft(0); setIsRunning(false) }
+  const guardarSet = async () => {
+    if (!sesionId) return
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) return
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const numSet = setsLog.length + 1
+    await supabase.from("sets_completados").insert({
+      user_id: user.id,
+      sesion_id: sesionId,
+      ejercicio_nombre: current?.exercise?.name,
+      exercise: current?.exercise as never,
+      peso_kg: logPeso,
+      reps: logReps,
+      rpe: logRpe,
+      numero_set: numSet,
+    } as never)
+
+    setSetsLog((prev) => [...prev, { peso: logPeso, reps: logReps, rpe: logRpe }])
+    setSetsCount((c) => c + 1)
+    setLogPeso(0)
+    setLogReps(current?.reps || 10)
+    setLogRpe(7)
+
+    if (numSet >= (current?.sets || 3)) {
+      goToFase("descanso", current?.restSeconds || 60)
+    } else {
+      goToFase("ejercicio", 60)
+    }
+  }
+
+  const skip = () => {
+    setTimeLeft(0)
+    setIsRunning(false)
+  }
   const skipBack = () => {
     if (currentIndex > 0) setCurrentIndex((i) => i - 1)
+  }
+  const handlePesoQuick = (delta: number) => {
+    setLogPeso((p) => Math.max(0, p + delta))
   }
 
   // SVG circular timer
@@ -108,6 +181,8 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
       </div>
     )
   }
+
+  const isLogPhase = fase === "registro"
 
   return (
     <AnimatePresence mode="wait">
@@ -134,7 +209,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
 
         {/* Phase tabs */}
         <div className="flex items-center justify-center gap-8">
-          {(["preparacion", "ejercicio", "descanso"] as Fase[]).map((f) => (
+          {(["preparacion", "ejercicio", "registro", "descanso"] as Fase[]).map((f) => (
             <div key={f} className="flex flex-col items-center gap-1">
               <span className={`text-xs font-medium transition-colors ${fase === f ? "text-[#00ff88]" : "text-white/30"}`}>
                 {FASE_LABEL[f]}
@@ -145,87 +220,193 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         </div>
 
         {/* Exercise image / video */}
-        <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-white/5">
-          {videoSrc ? (
-            <video src={videoSrc} autoPlay muted loop playsInline className="w-full h-full object-cover" />
-          ) : imgSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imgSrc}
-              alt={current?.exercise?.name}
-              className="w-full h-full object-cover"
-              onError={() => {
-                const name = current?.exercise?.name
-                const urls = getExerciseImageFallbacks(name)
-                const idx = urls.indexOf(imgSrc)
-                if (idx >= 0 && idx + 1 < urls.length) setImgSrc(urls[idx + 1])
-                else {
-                  fetch(`/api/media?name=${encodeURIComponent(name)}`)
-                    .then((r) => r.json())
-                    .then((data) => { if (data.imageUrl) setImgSrc(data.imageUrl); else setImgSrc(null) })
-                    .catch(() => setImgSrc(null))
-                }
-              }}
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={getPlaceholderSvg(current?.exercise?.name || "")} alt="" className="w-full h-full object-cover" />
-          )}
-          {next && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
-              <p className="text-xs text-white/70">
-                <span className="text-[#00ff88] font-semibold">Próximo: </span>
-                {next.exercise?.name}
+        {!isLogPhase && (
+          <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-white/5">
+            {videoSrc ? (
+              <video src={videoSrc} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+            ) : imgSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imgSrc}
+                alt={current?.exercise?.name}
+                className="w-full h-full object-cover"
+                onError={() => {
+                  const name = current?.exercise?.name
+                  const urls = getExerciseImageFallbacks(name)
+                  const idx = urls.indexOf(imgSrc)
+                  if (idx >= 0 && idx + 1 < urls.length) setImgSrc(urls[idx + 1])
+                  else {
+                    fetch(`/api/media?name=${encodeURIComponent(name)}`)
+                      .then((r) => r.json())
+                      .then((data) => { if (data.imageUrl) setImgSrc(data.imageUrl); else setImgSrc(null) })
+                      .catch(() => setImgSrc(null))
+                  }
+                }}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={getPlaceholderSvg(current?.exercise?.name || "")} alt="" className="w-full h-full object-cover" />
+            )}
+            {next && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-3 py-2">
+                <p className="text-xs text-white/70">
+                  <span className="text-[#00ff88] font-semibold">Próximo: </span>
+                  {next.exercise?.name}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isLogPhase ? (
+          /* ---- LOG SET FORM ---- */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/5 rounded-2xl p-5 space-y-4"
+          >
+            <div className="text-center">
+              <h3 className="text-white font-bold text-lg">{current?.exercise?.name}</h3>
+              <p className="text-sm text-white/50">
+                Serie {setsLog.length + 1} de {current?.sets || 3}
               </p>
             </div>
-          )}
-        </div>
 
-        {/* Circular SVG timer */}
-        <div className="flex items-center justify-center">
-          <div className="relative w-[200px] h-[200px]">
-            <svg
-              width="200"
-              height="200"
-              viewBox="0 0 200 200"
-              className="-rotate-90 absolute inset-0"
-            >
-              <circle
-                cx="100" cy="100" r={RADIUS}
-                fill="none"
-                stroke="rgba(255,255,255,0.07)"
-                strokeWidth="10"
+            {/* Already logged sets */}
+            {setsLog.length > 0 && (
+              <div className="bg-black/20 rounded-xl p-3 space-y-1.5 max-h-28 overflow-y-auto">
+                <p className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Series registradas</p>
+                {setsLog.map((s, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <span className="text-white/70">Serie {i + 1}</span>
+                    <span className="text-white font-medium">{s.peso} kg × {s.reps} reps · RPE {s.rpe}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Weight */}
+            <div>
+              <label className="text-xs text-white/50 mb-1.5 block">Peso (kg)</label>
+              <div className="flex gap-2">
+                {[2.5, 5, 10].map((d) => (
+                  <Button key={d} type="button" variant="outline" size="sm" onClick={() => handlePesoQuick(d)}
+                    className="text-xs h-8 border-white/10 text-white/70 hover:border-white/30">
+                    +{d}
+                  </Button>
+                ))}
+                {[2.5, 5, 10].map((d) => (
+                  <Button key={`m${d}`} type="button" variant="outline" size="sm" onClick={() => handlePesoQuick(-d)}
+                    className="text-xs h-8 border-white/10 text-white/70 hover:border-white/30">
+                    -{d}
+                  </Button>
+                ))}
+              </div>
+              <input
+                type="number"
+                value={logPeso}
+                onChange={(e) => setLogPeso(Number(e.target.value))}
+                className="w-full mt-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-white text-center text-lg font-bold outline-none focus:border-[#00ff88]/50"
+                step="0.5"
+                min="0"
               />
-              <circle
-                cx="100" cy="100" r={RADIUS}
-                fill="none"
-                stroke={timerColor}
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray={CIRCUMFERENCE}
-                strokeDashoffset={dashOffset}
-                className="transition-all duration-1000"
-                style={{ filter: `drop-shadow(0 0 10px ${timerColor}80)` }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-bold tabular-nums" style={{ color: timerColor }}>
-                {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-              </span>
-              <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">
-                {FASE_LABEL[fase]}
-              </span>
             </div>
-          </div>
-        </div>
 
-        {/* Exercise info */}
-        <div className="text-center space-y-1">
-          <h3 className="text-xl font-bold text-white">{current?.exercise?.name}</h3>
-          <p className="text-sm text-white/50">
-            {current?.sets} series · {current?.reps} reps · {current?.restSeconds}s descanso
-          </p>
-        </div>
+            {/* Reps */}
+            <div>
+              <label className="text-xs text-white/50 mb-1.5 block">Reps completadas</label>
+              <input
+                type="number"
+                value={logReps}
+                onChange={(e) => setLogReps(Number(e.target.value))}
+                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2.5 text-white text-center text-lg font-bold outline-none focus:border-[#00ff88]/50"
+                min="1"
+              />
+            </div>
+
+            {/* RPE */}
+            <div>
+              <label className="text-xs text-white/50 mb-1.5 block">RPE (esfuerzo percibido)</label>
+              <div className="flex gap-1.5">
+                {RPE_BUTTONS.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setLogRpe(v)}
+                    className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
+                      logRpe === v
+                        ? "bg-[#00ff88] text-[#0a0f1e]"
+                        : "bg-white/10 text-white/60 hover:bg-white/20"
+                    }`}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Button
+              onClick={guardarSet}
+              className="w-full h-12 rounded-xl bg-[#00ff88] text-[#0a0f1e] font-bold text-base hover:bg-[#00ff88]/90 gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              {setsLog.length + 1 >= (current?.sets || 3) ? "Guardar y descansar" : "Guardar serie"}
+            </Button>
+          </motion.div>
+        ) : (
+          <>
+            {/* Circular SVG timer */}
+            <div className="flex items-center justify-center">
+              <div className="relative w-[200px] h-[200px]">
+                <svg
+                  width="200"
+                  height="200"
+                  viewBox="0 0 200 200"
+                  className="-rotate-90 absolute inset-0"
+                >
+                  <circle
+                    cx="100" cy="100" r={RADIUS}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.07)"
+                    strokeWidth="10"
+                  />
+                  <circle
+                    cx="100" cy="100" r={RADIUS}
+                    fill="none"
+                    stroke={timerColor}
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={CIRCUMFERENCE}
+                    strokeDashoffset={dashOffset}
+                    className="transition-all duration-1000"
+                    style={{ filter: `drop-shadow(0 0 10px ${timerColor}80)` }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-4xl font-bold tabular-nums" style={{ color: timerColor }}>
+                    {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                  </span>
+                  <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">
+                    {FASE_LABEL[fase]}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Exercise info */}
+            <div className="text-center space-y-1">
+              <h3 className="text-xl font-bold text-white">{current?.exercise?.name}</h3>
+              <p className="text-sm text-white/50">
+                {current?.sets} series · {current?.reps} reps · {current?.restSeconds}s descanso
+              </p>
+              {setsLog.length > 0 && (
+                <p className="text-xs text-[#00ff88]">
+                  {setsLog.length}/{current?.sets} series registradas
+                </p>
+              )}
+            </div>
+          </>
+        )}
 
         {/* Controls */}
         <div className="flex items-center justify-center gap-4 pb-2">
@@ -233,7 +414,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
             variant="outline"
             size="icon"
             onClick={skipBack}
-            disabled={currentIndex === 0}
+            disabled={currentIndex === 0 || isLogPhase}
             className="w-12 h-12 rounded-full border-white/10 hover:border-white/30"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -242,6 +423,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
             variant="outline"
             size="icon"
             onClick={() => setIsRunning((p) => !p)}
+            disabled={isLogPhase}
             className="w-16 h-16 rounded-full border-[#00ff88]/30 bg-[#00ff88]/10 hover:bg-[#00ff88]/20"
           >
             {isRunning
@@ -253,6 +435,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
             variant="outline"
             size="icon"
             onClick={skip}
+            disabled={isLogPhase}
             className="w-12 h-12 rounded-full border-white/10 hover:border-white/30"
           >
             <SkipForward className="w-5 h-5" />

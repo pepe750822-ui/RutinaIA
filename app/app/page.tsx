@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dumbbell, Sparkles, Zap, ChevronRight, Play, BarChart3 } from "lucide-react";
+import { Dumbbell, Sparkles, Zap, ChevronRight, Play, BarChart3, Trophy, TrendingUp, History } from "lucide-react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { getExerciseImageFallbacks, getPlaceholderSvg } from "@/lib/images";
@@ -23,9 +23,18 @@ interface RutinaRow {
   nivel: string;
 }
 
+const weekStart = () => {
+  const d = new Date();
+  const day = d.getDay();
+  d.setDate(d.getDate() - ((day + 6) % 7));
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+};
+
 export default function DashboardPage() {
   const [nombre, setNombre] = useState("Usuario");
-  const [stats, setStats] = useState({ sesiones: 0, rutinas: 0, minutos: 0 });
+  const [stats, setStats] = useState({ sesiones: 0, rutinas: 0, minutos: 0, minSemana: 0, setsSemana: 0, racha: 0 });
+  const [prs, setPrs] = useState<{ nombre: string; peso: number }[]>([]);
   const [rutinas, setRutinas] = useState<RutinaRow[]>([]);
 
   useEffect(() => {
@@ -52,22 +61,79 @@ export default function DashboardPage() {
         .order("created_at", { ascending: false })
         .limit(5);
 
-      const { data: completadas } = await supabase
-        .from("ejercicios_completados")
-        .select("duracion_min")
-        .eq("user_id", user.id) as unknown as { data: { duracion_min: number }[] | null };
+      if (rutinasData) setRutinas(rutinasData as RutinaRow[]);
 
-      const totalMinutos = completadas?.reduce(
-        (acc, c) => acc + (c.duracion_min || 0), 0
-      ) ?? 0;
+      // Sessions
+      const { data: sesionesRaw } = await supabase
+        .from("sesiones")
+        .select("id, duracion_min, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      const sesiones = (sesionesRaw ?? []) as { id: string; duracion_min: number; created_at: string }[];
+
+      const totalMinutos = sesiones.reduce((a: number, s) => a + (s.duracion_min || 0), 0);
+
+      // Weekly: sets + volume
+      const ws = weekStart();
+      const { data: setsSemana } = await supabase
+        .from("sets_completados")
+        .select("peso_kg, created_at")
+        .eq("user_id", user.id)
+        .gte("created_at", ws) as unknown as { data: { peso_kg: number; created_at: string }[] | null };
+
+      const { data: sesionesSemana } = await supabase
+        .from("sesiones")
+        .select("duracion_min, created_at")
+        .eq("user_id", user.id)
+        .gte("created_at", ws) as unknown as { data: { duracion_min: number; created_at: string }[] | null };
+
+      const setsCount = setsSemana?.length ?? 0;
+      const minSemana = (sesionesSemana ?? []).reduce((a: number, s: { duracion_min: number }) => a + (s.duracion_min || 0), 0);
+
+      // Streak: consecutive days with sessions
+      let racha = 0;
+      if (sesiones.length > 0) {
+        const fechas = [...new Set(sesiones.map((s) => s.created_at?.split("T")[0]))].sort().reverse() as string[];
+        const hoy = new Date();
+        for (let i = 0; i < fechas.length; i++) {
+          const expected = new Date(hoy);
+          expected.setDate(expected.getDate() - i);
+          if (fechas[i] === expected.toISOString().split("T")[0]) {
+            racha++;
+          } else break;
+        }
+      }
 
       setStats({
-        sesiones: completadas?.length ?? 0,
+        sesiones: sesiones?.length ?? 0,
         rutinas: rutinasData?.length ?? 0,
         minutos: totalMinutos,
+        minSemana,
+        setsSemana: setsCount,
+        racha,
       });
 
-      if (rutinasData) setRutinas(rutinasData as RutinaRow[]);
+      // PRs: highest weight per exercise (last 90 days)
+      const { data: setsPr } = await supabase
+        .from("sets_completados")
+        .select("ejercicio_nombre, peso_kg")
+        .eq("user_id", user.id)
+        .gte("created_at", new Date(Date.now() - 90 * 86400000).toISOString())
+        .order("peso_kg", { ascending: false }) as unknown as { data: { ejercicio_nombre: string; peso_kg: number }[] | null };
+
+      if (setsPr) {
+        const prMap = new Map<string, number>();
+        setsPr.forEach((s) => {
+          const prev = prMap.get(s.ejercicio_nombre) ?? 0;
+          if (s.peso_kg > prev) prMap.set(s.ejercicio_nombre, s.peso_kg);
+        });
+        setPrs(
+          Array.from(prMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([nombre, peso]) => ({ nombre, peso }))
+        );
+      }
     }
     load();
   }, []);
@@ -125,9 +191,9 @@ export default function DashboardPage() {
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "Sesiones", value: stats.sesiones },
-          { label: "Rutinas", value: stats.rutinas },
-          { label: "Minutos", value: stats.minutos },
+          { label: "Sets/racha", value: `${stats.setsSemana} · ${stats.racha}d`, icon: Zap },
+          { label: "Semanal", value: `${stats.minSemana} min`, icon: TrendingUp },
+          { label: "Total", value: `${stats.sesiones} sesiones`, icon: History },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -136,9 +202,9 @@ export default function DashboardPage() {
             transition={{ delay: 0.12 + i * 0.05 }}
           >
             <Card>
-              <CardContent className="p-3 text-center">
+              <CardContent className="p-3 text-center space-y-1">
                 <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-[10px] text-white/40 uppercase tracking-wider mt-0.5">
+                <p className="text-[10px] text-white/40 uppercase tracking-wider">
                   {stat.label}
                 </p>
               </CardContent>
@@ -214,11 +280,39 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* PRs */}
+      {prs.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32 }}
+        >
+          <Card className="border-[#ffaa00]/20 bg-gradient-to-br from-[#ffaa00]/5 to-transparent">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Trophy className="w-4 h-4 text-[#ffaa00]" />
+                <span className="text-xs font-bold text-[#ffaa00] uppercase tracking-wider">
+                  PRs personales
+                </span>
+              </div>
+              <div className="space-y-2">
+                {prs.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <span className="text-sm text-white/80 truncate pr-2">{p.nombre}</span>
+                    <span className="text-sm font-bold text-[#ffaa00] shrink-0">{p.peso} kg</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
       {/* Progress analysis */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
+        transition={{ delay: 0.38 }}
       >
         <Card className="border-[#0066ff]/20 bg-gradient-to-br from-[#0066ff]/5 to-transparent">
           <CardContent className="p-4">
@@ -230,8 +324,8 @@ export default function DashboardPage() {
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
               {stats.sesiones > 0
-                ? `Has completado ${stats.sesiones} sesión${stats.sesiones !== 1 ? "es" : ""} con un total de ${stats.minutos} minutos entrenados. La IA sugiere priorizar el descanso para optimizar tu recuperación muscular.`
-                : "Completa tu primera sesión para que la IA analice tu rendimiento y genere recomendaciones personalizadas."}
+                ? `Llevas ${stats.sesiones} sesión${stats.sesiones !== 1 ? "es" : ""} (${stats.minutos} min total). Esta semana: ${stats.setsSemana} sets en ${stats.minSemana} min.${stats.racha > 0 ? ` Racha activa: ${stats.racha} día${stats.racha > 1 ? "s" : ""}.` : ""} La IA ajustará tus cargas en la próxima rutina según estos datos.`
+                : "Completa tu primera sesión para que la IA analice tu rendimiento."}
             </p>
           </CardContent>
         </Card>

@@ -46,6 +46,31 @@ export interface Profile {
   created_at: string;
 }
 
+export interface SetCompletado {
+  id: string;
+  user_id: string;
+  sesion_id: string;
+  rutina_id?: string;
+  ejercicio_nombre: string;
+  exercise?: Exercise;
+  peso_kg: number;
+  reps: number;
+  rpe?: number;
+  numero_set: number;
+  created_at: string;
+}
+
+export interface Sesion {
+  id: string;
+  user_id: string;
+  rutina_id?: string;
+  nombre: string;
+  inicio: string;
+  fin?: string;
+  duracion_min: number;
+  sets?: SetCompletado[];
+}
+
 export interface EjercicioCompletado {
   id: string;
   user_id: string;
