@@ -93,7 +93,7 @@ export default function RutinaDetallePage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="max-w-lg mx-auto py-8"
+        className="max-w-lg mx-auto py-6 sm:py-8 pb-28 sm:pb-8"
       >
         <button
           onClick={() => setModoEntrenamiento(false)}
@@ -116,18 +116,18 @@ export default function RutinaDetallePage() {
       animate={{ opacity: 1 }}
       className="space-y-8"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-3">
         <Link
           href="/app"
-          className="text-white/50 hover:text-white transition-colors"
+          className="text-white/50 hover:text-white transition-colors mt-1 shrink-0"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold text-white">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
             {rutina.nombre}
           </h1>
-          <p className="text-white/50 mt-1">
+          <p className="text-white/50 mt-1 text-sm sm:text-base">
             {rutina.objetivo} &middot; {rutina.nivel} &middot;{" "}
             {rutina.duracion_minutos} min
           </p>
@@ -135,7 +135,7 @@ export default function RutinaDetallePage() {
       </div>
 
       <Card>
-        <CardContent className="p-6 flex items-center justify-between">
+        <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="text-white font-semibold">¿Listo para entrenar?</p>
             <p className="text-sm text-white/50">
@@ -146,6 +146,7 @@ export default function RutinaDetallePage() {
           <Button
             onClick={() => setModoEntrenamiento(true)}
             size="lg"
+            className="w-full sm:w-auto min-h-[44px]"
             disabled={!rutina.ejercicios?.length}
           >
             <Play className="w-5 h-5 mr-2" />

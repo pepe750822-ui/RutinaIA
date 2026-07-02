@@ -25,7 +25,7 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
       <Card className="overflow-hidden">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <div className="w-24 h-24 rounded-lg overflow-hidden bg-[#00ff88]/10 shrink-0 flex items-center justify-center">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#00ff88]/10 shrink-0 flex items-center justify-center">
               {imgUrl && !imgError ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -39,7 +39,7 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-white font-semibold truncate">
+              <h3 className="text-white font-semibold line-clamp-2 sm:truncate sm:line-clamp-none">
                 {exercise.name}
               </h3>
               <p className="text-sm text-white/50 capitalize mt-1">

@@ -363,7 +363,7 @@ export default function RutinaGenerator({ onGenerate }: Props) {
       case 5:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Frecuencia semanal</Label>
                 <Select
@@ -568,15 +568,19 @@ export default function RutinaGenerator({ onGenerate }: Props) {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-white">{rutina.nombre}</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">{rutina.nombre}</h2>
               <p className="text-white/50 text-sm">
                 Duración: {rutina.duracion_minutos} min &middot;{" "}
                 {rutina.ejercicios.length} ejercicios
               </p>
             </div>
-            <Button variant="outline" onClick={() => rutina?.id && router.push(`/rutina/${rutina.id}`)}>
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => rutina?.id && router.push(`/rutina/${rutina.id}`)}
+            >
               {rutina?.id ? "Ver rutina guardada" : "Guardar rutina"}
             </Button>
           </div>
