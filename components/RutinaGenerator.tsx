@@ -19,52 +19,29 @@ interface Props {
 }
 
 const defaultForm: RutinaGeneratorForm = {
+  lugar: "gimnasio",
   objetivo: "ganar_muscular",
   nivel: "principiante",
   experiencia: "ninguna",
   conocimiento: "poco",
-  edad: 25,
-  peso: 70,
-  altura: 170,
+  edad: "18_25",
+  peso: "60_75",
+  altura: "medio",
   genero: "masculino",
   condicion_fisica: "regular",
-  lesiones: "",
-  condiciones_medicas: "",
-  frecuencia_semanal: 3,
-  duracion_minutos: 30,
+  lesiones: "ninguna",
+  condiciones_medicas: "ninguna",
+  frecuencia_semanal: "3_4",
+  duracion_minutos: "25_30",
   horario_preferido: "mañana",
   equipo_disponible: [],
   grupos_musculares: [],
-  prioridad_muscular: "",
+  prioridad_muscular: "ninguna",
 }
 
-const EQUIPO_OPTIONS = [
-  { value: "body weight", label: "Peso corporal" },
-  { value: "dumbbell", label: "Mancuernas" },
-  { value: "barbell", label: "Barra" },
-  { value: "kettlebell", label: "Kettlebell" },
-  { value: "machine", label: "Máquinas" },
-  { value: "cable", label: "Cables" },
-  { value: "band", label: "Bandas elásticas" },
-  { value: "medicine ball", label: "Balón medicinal" },
-  { value: "rope", label: "Cuerda" },
-]
-
-const MUSCULOS_OPTIONS = [
-  { value: "chest", label: "Pecho" },
-  { value: "back", label: "Espalda" },
-  { value: "shoulders", label: "Hombros" },
-  { value: "upper arms", label: "Bíceps/Tríceps" },
-  { value: "lower arms", label: "Antebrazos" },
-  { value: "upper legs", label: "Cuádriceps/Isquios" },
-  { value: "lower legs", label: "Gemelos" },
-  { value: "waist", label: "Core/Abdominales" },
-  { value: "cardio", label: "Cardio" },
-  { value: "full body", label: "Cuerpo completo" },
-]
-
 const sections = [
-  { step: 0, title: "Objetivos", subtitle: "¿Qué quieres lograr?" },
+  { step: 0, title: "Lugar de entrenamiento", subtitle: "¿Dónde vas a entrenar?" },
+  { step: 1, title: "Objetivos", subtitle: "¿Qué quieres lograr?" },
   { step: 1, title: "Nivel y experiencia", subtitle: "Cuéntanos tu experiencia" },
   { step: 2, title: "Datos personales", subtitle: "Información básica" },
   { step: 3, title: "Condición física", subtitle: "Salud y lesiones" },
@@ -176,18 +153,19 @@ export default function RutinaGenerator({ onGenerate }: Props) {
 
   const canProceed = () => {
     switch (step) {
-      case 0: return !!form.objetivo
-      case 1: return !!form.nivel && !!form.experiencia && !!form.conocimiento
-      case 2: return form.edad > 0 && form.peso > 0 && form.altura > 0 && !!form.genero
-      case 3: return !!form.condicion_fisica
-      case 4: return form.frecuencia_semanal > 0 && form.duracion_minutos > 0 && !!form.horario_preferido
-      case 5: return form.grupos_musculares.length > 0
+      case 0: return !!form.lugar
+      case 1: return !!form.objetivo
+      case 2: return !!form.nivel && !!form.experiencia && !!form.conocimiento
+      case 3: return !!form.edad && !!form.peso && !!form.altura && !!form.genero
+      case 4: return !!form.condicion_fisica && !!form.lesiones && !!form.condiciones_medicas
+      case 5: return !!form.frecuencia_semanal && !!form.duracion_minutos && !!form.horario_preferido
+      case 6: return form.grupos_musculares.length > 0 && !!form.prioridad_muscular
       default: return false
     }
   }
 
   const nextStep = () => {
-    if (step < 5) setStep((s) => s + 1)
+    if (step < 6) setStep((s) => s + 1)
     else handleSubmit()
   }
 
@@ -198,6 +176,21 @@ export default function RutinaGenerator({ onGenerate }: Props) {
   const renderStep = () => {
     switch (step) {
       case 0:
+        return (
+          <div className="space-y-6">
+            <RadioGroup
+              options={[
+                { value: "gimnasio", label: "🏋️ Gimnasio" },
+                { value: "casa", label: "🏠 Casa" },
+                { value: "ambos", label: "🔄 Ambos" },
+              ]}
+              value={form.lugar}
+              onChange={(v) => update("lugar", v as RutinaGeneratorForm["lugar"])}
+            />
+          </div>
+        )
+
+      case 1:
         return (
           <div className="space-y-6">
             <RadioGroup
@@ -213,7 +206,7 @@ export default function RutinaGenerator({ onGenerate }: Props) {
           </div>
         )
 
-      case 1:
+      case 2:
         return (
           <div className="space-y-6">
             <div className="space-y-2">
@@ -256,43 +249,50 @@ export default function RutinaGenerator({ onGenerate }: Props) {
           </div>
         )
 
-      case 2:
+      case 3:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Edad</Label>
-                <input
-                  type="number"
-                  value={form.edad || ""}
-                  onChange={(e) => update("edad", Math.max(1, parseInt(e.target.value) || 0))}
-                  className="w-full h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#00ff88]"
-                  min={1}
-                  max={120}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Peso (kg)</Label>
-                <input
-                  type="number"
-                  value={form.peso || ""}
-                  onChange={(e) => update("peso", Math.max(1, parseInt(e.target.value) || 0))}
-                  className="w-full h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#00ff88]"
-                  min={1}
-                  max={500}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Altura (cm)</Label>
-                <input
-                  type="number"
-                  value={form.altura || ""}
-                  onChange={(e) => update("altura", Math.max(1, parseInt(e.target.value) || 0))}
-                  className="w-full h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#00ff88]"
-                  min={1}
-                  max={300}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label>Edad</Label>
+              <RadioGroup
+                options={[
+                  { value: "menor_18", label: "Menor de 18" },
+                  { value: "18_25", label: "18 - 25 años" },
+                  { value: "26_35", label: "26 - 35 años" },
+                  { value: "36_45", label: "36 - 45 años" },
+                  { value: "46_55", label: "46 - 55 años" },
+                  { value: "mayor_55", label: "Mayor de 55" },
+                ]}
+                value={form.edad}
+                onChange={(v) => update("edad", v as RutinaGeneratorForm["edad"])}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Peso</Label>
+              <RadioGroup
+                options={[
+                  { value: "menos_60", label: "Menos de 60 kg" },
+                  { value: "60_75", label: "60 - 75 kg" },
+                  { value: "76_90", label: "76 - 90 kg" },
+                  { value: "91_110", label: "91 - 110 kg" },
+                  { value: "mas_110", label: "Más de 110 kg" },
+                ]}
+                value={form.peso}
+                onChange={(v) => update("peso", v as RutinaGeneratorForm["peso"])}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Altura</Label>
+              <RadioGroup
+                options={[
+                  { value: "bajo", label: "Bajo (-160 cm)" },
+                  { value: "medio", label: "Medio (160-175 cm)" },
+                  { value: "alto", label: "Alto (176-190 cm)" },
+                  { value: "muy_alto", label: "Muy alto (+190 cm)" },
+                ]}
+                value={form.altura}
+                onChange={(v) => update("altura", v as RutinaGeneratorForm["altura"])}
+              />
             </div>
             <div className="space-y-2">
               <Label>Género</Label>
@@ -309,7 +309,7 @@ export default function RutinaGenerator({ onGenerate }: Props) {
           </div>
         )
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <div className="space-y-2">
@@ -326,59 +326,71 @@ export default function RutinaGenerator({ onGenerate }: Props) {
               />
             </div>
             <div className="space-y-2">
-              <Label>Lesiones previas (opcional)</Label>
-              <textarea
+              <Label>Lesiones previas</Label>
+              <RadioGroup
+                options={[
+                  { value: "ninguna", label: "Ninguna" },
+                  { value: "espalda", label: "Espalda" },
+                  { value: "rodillas", label: "Rodillas" },
+                  { value: "hombros", label: "Hombros" },
+                  { value: "muñecas", label: "Muñecas" },
+                  { value: "tobillos", label: "Tobillos" },
+                  { value: "multiple", label: "Múltiples" },
+                ]}
                 value={form.lesiones}
-                onChange={(e) => update("lesiones", e.target.value)}
-                placeholder="Ej: Lesión en hombro derecho, esguince de tobillo..."
-                className="w-full h-20 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#00ff88] resize-none"
+                onChange={(v) => update("lesiones", v as RutinaGeneratorForm["lesiones"])}
               />
             </div>
             <div className="space-y-2">
-              <Label>Condiciones médicas (opcional)</Label>
-              <textarea
+              <Label>Condiciones médicas</Label>
+              <RadioGroup
+                options={[
+                  { value: "ninguna", label: "Ninguna" },
+                  { value: "hipertension", label: "Hipertensión" },
+                  { value: "diabetes", label: "Diabetes" },
+                  { value: "corazon", label: "Problemas cardíacos" },
+                  { value: "asthma", label: "Asma" },
+                  { value: "multiple", label: "Múltiples" },
+                ]}
                 value={form.condiciones_medicas}
-                onChange={(e) => update("condiciones_medicas", e.target.value)}
-                placeholder="Ej: Hipertensión, diabetes, asma..."
-                className="w-full h-20 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#00ff88] resize-none"
+                onChange={(v) => update("condiciones_medicas", v as RutinaGeneratorForm["condiciones_medicas"])}
               />
             </div>
           </div>
         )
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Frecuencia semanal</Label>
                 <Select
-                  value={String(form.frecuencia_semanal)}
-                  onValueChange={(v) => update("frecuencia_semanal", parseInt(v) as RutinaGeneratorForm["frecuencia_semanal"])}
+                  value={form.frecuencia_semanal}
+                  onValueChange={(v) => update("frecuencia_semanal", v as RutinaGeneratorForm["frecuencia_semanal"])}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-                      <SelectItem key={n} value={String(n)}>
-                        {n} {n === 1 ? "día" : "días"} / semana
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="1_2">1 - 2 días / semana</SelectItem>
+                    <SelectItem value="3_4">3 - 4 días / semana</SelectItem>
+                    <SelectItem value="5_6">5 - 6 días / semana</SelectItem>
+                    <SelectItem value="7">Todos los días</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label>Duración por sesión</Label>
                 <Select
-                  value={String(form.duracion_minutos)}
-                  onValueChange={(v) => update("duracion_minutos", parseInt(v) as RutinaGeneratorForm["duracion_minutos"])}
+                  value={form.duracion_minutos}
+                  onValueChange={(v) => update("duracion_minutos", v as RutinaGeneratorForm["duracion_minutos"])}
                 >
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {[15, 30, 45, 60, 90].map((n) => (
-                      <SelectItem key={n} value={String(n)}>
-                        {n} minutos
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="15_20">15 - 20 minutos</SelectItem>
+                    <SelectItem value="25_30">25 - 30 minutos</SelectItem>
+                    <SelectItem value="35_45">35 - 45 minutos</SelectItem>
+                    <SelectItem value="45_60">45 - 60 minutos</SelectItem>
+                    <SelectItem value="60_90">60 - 90 minutos</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -398,32 +410,53 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             <div className="space-y-2">
               <Label>Equipo disponible</Label>
               <OptionGroup
-                options={EQUIPO_OPTIONS}
+                options={[
+                  { value: "peso_corporal", label: "Peso corporal" },
+                  { value: "mancuernas", label: "Mancuernas" },
+                  { value: "barra", label: "Barra" },
+                  { value: "bandas", label: "Bandas elásticas" },
+                  { value: "maquina", label: "Máquinas" },
+                ]}
                 selected={form.equipo_disponible}
-                onChange={(v) => update("equipo_disponible", v)}
+                onChange={(v) => update("equipo_disponible", v as RutinaGeneratorForm["equipo_disponible"])}
               />
             </div>
           </div>
         )
 
-      case 5:
+      case 6:
         return (
           <div className="space-y-6">
             <div className="space-y-2">
               <Label>Grupos musculares a trabajar</Label>
               <OptionGroup
-                options={MUSCULOS_OPTIONS}
+                options={[
+                  { value: "todo", label: "Cuerpo completo" },
+                  { value: "pecho", label: "Pecho" },
+                  { value: "espalda", label: "Espalda" },
+                  { value: "piernas", label: "Piernas" },
+                  { value: "hombros", label: "Hombros" },
+                  { value: "brazos", label: "Brazos" },
+                  { value: "core", label: "Core" },
+                ]}
                 selected={form.grupos_musculares}
-                onChange={(v) => update("grupos_musculares", v)}
+                onChange={(v) => update("grupos_musculares", v as RutinaGeneratorForm["grupos_musculares"])}
               />
             </div>
             <div className="space-y-2">
-              <Label>Prioridad muscular (opcional)</Label>
-              <textarea
+              <Label>Prioridad muscular</Label>
+              <RadioGroup
+                options={[
+                  { value: "ninguna", label: "Sin prioridad" },
+                  { value: "pecho", label: "Pecho" },
+                  { value: "espalda", label: "Espalda" },
+                  { value: "piernas", label: "Piernas" },
+                  { value: "hombros", label: "Hombros" },
+                  { value: "brazos", label: "Brazos" },
+                  { value: "core", label: "Core" },
+                ]}
                 value={form.prioridad_muscular}
-                onChange={(e) => update("prioridad_muscular", e.target.value)}
-                placeholder="Ej: Quiero enfocarme más en pecho y hombros..."
-                className="w-full h-20 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#00ff88] resize-none"
+                onChange={(v) => update("prioridad_muscular", v as RutinaGeneratorForm["prioridad_muscular"])}
               />
             </div>
           </div>
@@ -435,7 +468,6 @@ export default function RutinaGenerator({ onGenerate }: Props) {
     <div className="space-y-8">
       <Card>
         <CardContent className="p-6">
-          {/* Step indicator */}
           <div className="flex items-center justify-between mb-8">
             {sections.map((s, i) => (
               <div key={s.step} className="flex items-center">
@@ -462,7 +494,6 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             ))}
           </div>
 
-          {/* Progress bar */}
           <div className="w-full h-1 bg-white/5 rounded-full mb-8 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-[#00ff88] to-[#0066ff] transition-all duration-500 rounded-full"
@@ -470,7 +501,6 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             />
           </div>
 
-          {/* Section title */}
           <div className="mb-6">
             <h2 className="text-xl font-bold text-white">
               {sections[step].title}
@@ -480,7 +510,6 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             </p>
           </div>
 
-          {/* Step content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -497,7 +526,6 @@ export default function RutinaGenerator({ onGenerate }: Props) {
             <p className="text-sm text-red-400 mt-4">{error}</p>
           )}
 
-          {/* Navigation buttons */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5">
             <Button
               variant="ghost"

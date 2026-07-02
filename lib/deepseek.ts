@@ -28,6 +28,106 @@ const CONOCIMIENTO_LABELS: Record<string, string> = {
   muy_bueno: "Muy bueno",
 };
 
+const LUGAR_LABELS: Record<string, string> = {
+  gimnasio: "Gimnasio",
+  casa: "Casa",
+  ambos: "Ambos (gimnasio y casa)",
+};
+
+const EDAD_LABELS: Record<string, string> = {
+  menor_18: "Menor de 18 años",
+  "18_25": "18-25 años",
+  "26_35": "26-35 años",
+  "36_45": "36-45 años",
+  "46_55": "46-55 años",
+  mayor_55: "Mayor de 55 años",
+};
+
+const PESO_LABELS: Record<string, string> = {
+  menos_60: "Menos de 60 kg",
+  "60_75": "60-75 kg",
+  "76_90": "76-90 kg",
+  "91_110": "91-110 kg",
+  mas_110: "Más de 110 kg",
+};
+
+const ALTURA_LABELS: Record<string, string> = {
+  bajo: "Bajo (-160 cm)",
+  medio: "Medio (160-175 cm)",
+  alto: "Alto (176-190 cm)",
+  muy_alto: "Muy alto (+190 cm)",
+};
+
+const LESIONES_LABELS: Record<string, string> = {
+  ninguna: "Ninguna",
+  espalda: "Espalda",
+  rodillas: "Rodillas",
+  hombros: "Hombros",
+  muñecas: "Muñecas",
+  tobillos: "Tobillos",
+  multiple: "Múltiples lesiones",
+};
+
+const MEDICAS_LABELS: Record<string, string> = {
+  ninguna: "Ninguna",
+  hipertension: "Hipertensión",
+  diabetes: "Diabetes",
+  corazon: "Problemas cardíacos",
+  asthma: "Asma",
+  multiple: "Múltiples condiciones",
+};
+
+const FRECUENCIA_LABELS: Record<string, string> = {
+  "1_2": "1-2 días por semana",
+  "3_4": "3-4 días por semana",
+  "5_6": "5-6 días por semana",
+  "7": "Todos los días",
+};
+
+const DURACION_LABELS: Record<string, string> = {
+  "15_20": "15-20 minutos",
+  "25_30": "25-30 minutos",
+  "35_45": "35-45 minutos",
+  "45_60": "45-60 minutos",
+  "60_90": "60-90 minutos",
+};
+
+const DURACION_MIDPOINT: Record<string, number> = {
+  "15_20": 17,
+  "25_30": 27,
+  "35_45": 40,
+  "45_60": 52,
+  "60_90": 75,
+};
+
+const EQUIPO_LABELS: Record<string, string> = {
+  peso_corporal: "Peso corporal",
+  mancuernas: "Mancuernas",
+  barra: "Barra",
+  bandas: "Bandas elásticas",
+  maquina: "Máquinas",
+};
+
+const MUSCULO_LABELS: Record<string, string> = {
+  todo: "Cuerpo completo",
+  pecho: "Pecho",
+  espalda: "Espalda",
+  piernas: "Piernas",
+  hombros: "Hombros",
+  brazos: "Brazos",
+  core: "Core",
+};
+
+const PRIORIDAD_LABELS: Record<string, string> = {
+  ninguna: "Ninguna en particular",
+  pecho: "Pecho",
+  espalda: "Espalda",
+  piernas: "Piernas",
+  hombros: "Hombros",
+  brazos: "Brazos",
+  core: "Core",
+};
+
 const CONDICION_LABELS: Record<string, string> = {
   mala: "Mala",
   regular: "Regular",
@@ -43,6 +143,9 @@ function buildPrompt(
 
 ## DATOS DEL USUARIO
 
+### Lugar de entrenamiento
+- Lugar: ${LUGAR_LABELS[data.lugar]}
+
 ### Objetivo
 - Objetivo principal: ${OBJETIVO_LABELS[data.objetivo]}
 
@@ -52,26 +155,25 @@ function buildPrompt(
 - Conocimiento de técnica: ${CONOCIMIENTO_LABELS[data.conocimiento]}
 
 ### Datos personales
-- Edad: ${data.edad} años
-- Peso: ${data.peso} kg
-- Altura: ${data.altura} cm
+- Edad: ${EDAD_LABELS[data.edad]}
+- Peso: ${PESO_LABELS[data.peso]}
+- Altura: ${ALTURA_LABELS[data.altura]}
 - Género: ${data.genero}
-- IMC aproximado: ${(data.peso / ((data.altura / 100) * (data.altura / 100))).toFixed(1)}
 
 ### Condición física
 - Condición actual: ${CONDICION_LABELS[data.condicion_fisica]}
-- Lesiones previas: ${data.lesiones || "Ninguna"}
-- Condiciones médicas: ${data.condiciones_medicas || "Ninguna"}
+- Lesiones previas: ${LESIONES_LABELS[data.lesiones]}
+- Condiciones médicas: ${MEDICAS_LABELS[data.condiciones_medicas]}
 
 ### Preferencias de entrenamiento
-- Frecuencia semanal: ${data.frecuencia_semanal} días
-- Duración por sesión: ${data.duracion_minutos} minutos
+- Frecuencia semanal: ${FRECUENCIA_LABELS[data.frecuencia_semanal]}
+- Duración por sesión: ${DURACION_LABELS[data.duracion_minutos]}
 - Horario preferido: ${data.horario_preferido}
-- Equipo disponible: ${data.equipo_disponible.length ? data.equipo_disponible.join(", ") : "Ninguno (solo peso corporal)"}
+- Equipo disponible: ${data.equipo_disponible.length ? data.equipo_disponible.map((e) => EQUIPO_LABELS[e] || e).join(", ") : "Ninguno (solo peso corporal)"}
 
 ### Musculatura
-- Grupos musculares a trabajar: ${data.grupos_musculares.join(", ")}
-- Prioridad muscular: ${data.prioridad_muscular || "Ninguna en particular"}
+- Grupos musculares a trabajar: ${data.grupos_musculares.map((g) => MUSCULO_LABELS[g] || g).join(", ")}
+- Prioridad muscular: ${PRIORIDAD_LABELS[data.prioridad_muscular] || "Ninguna en particular"}
 
 ## INSTRUCCIONES
 
@@ -86,7 +188,7 @@ function buildPrompt(
 Responde SOLO con un JSON válido con esta estructura exacta:
 {
   "nombre": "Nombre sugerido para la rutina (máx 60 caracteres, en español)",
-  "duracion_minutos": ${data.duracion_minutos},
+  "duracion_minutos": ${DURACION_MIDPOINT[data.duracion_minutos]},
   "ejercicios": [
     {
       "exerciseId": "id exacto del ejercicio del dataset",

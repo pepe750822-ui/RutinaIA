@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     const {
+      lugar,
       objetivo,
       nivel,
       experiencia,
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
 
     const result = await generarRutinaConIA(
       {
+        lugar,
         objetivo,
         nivel,
         experiencia,

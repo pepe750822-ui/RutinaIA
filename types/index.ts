@@ -47,21 +47,22 @@ export interface EjercicioCompletado {
 }
 
 export interface RutinaGeneratorForm {
+  lugar: "gimnasio" | "casa" | "ambos";
   objetivo: "perder_peso" | "mejorar_condicion" | "ganar_muscular" | "mantener";
   nivel: "principiante" | "intermedio" | "avanzado";
   experiencia: "ninguna" | "basica" | "intermedia" | "avanzada";
   conocimiento: "poco" | "bueno" | "muy_bueno";
-  edad: number;
-  peso: number;
-  altura: number;
+  edad: "menor_18" | "18_25" | "26_35" | "36_45" | "46_55" | "mayor_55";
+  peso: "menos_60" | "60_75" | "76_90" | "91_110" | "mas_110";
+  altura: "bajo" | "medio" | "alto" | "muy_alto";
   genero: "masculino" | "femenino" | "otro";
   condicion_fisica: "mala" | "regular" | "buena" | "excelente";
-  lesiones: string;
-  condiciones_medicas: string;
-  frecuencia_semanal: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  duracion_minutos: 15 | 30 | 45 | 60 | 90;
+  lesiones: "ninguna" | "espalda" | "rodillas" | "hombros" | "muñecas" | "tobillos" | "multiple";
+  condiciones_medicas: "ninguna" | "hipertension" | "diabetes" | "corazon" | "asthma" | "multiple";
+  frecuencia_semanal: "1_2" | "3_4" | "5_6" | "7";
+  duracion_minutos: "15_20" | "25_30" | "35_45" | "45_60" | "60_90";
   horario_preferido: "mañana" | "tarde" | "noche";
-  equipo_disponible: string[];
-  grupos_musculares: string[];
-  prioridad_muscular: string;
+  equipo_disponible: ("mancuernas" | "barra" | "bandas" | "maquina" | "peso_corporal")[];
+  grupos_musculares: ("todo" | "pecho" | "espalda" | "piernas" | "hombros" | "brazos" | "core")[];
+  prioridad_muscular: "ninguna" | "pecho" | "espalda" | "piernas" | "hombros" | "brazos" | "core";
 }
