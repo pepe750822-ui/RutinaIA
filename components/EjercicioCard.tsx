@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { RutinaEjercicio } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { getExerciseImageFallbacks, getPlaceholderSvg } from "@/lib/images"
@@ -79,6 +79,7 @@ function ExerciseImage({ name }: { name: string }) {
   const urls = getExerciseImageFallbacks(name)
   const [imgSrc, setImgSrc] = useState<string | null>(urls[0] || null)
   const [fallbackIdx, setFallbackIdx] = useState(0)
+  const [hasVideo, setHasVideo] = useState(false)
   const svgPlaceholder = getPlaceholderSvg(name)
 
   const handleError = () => {
@@ -90,6 +91,22 @@ function ExerciseImage({ name }: { name: string }) {
       setImgSrc(null)
     }
   }
+
+  useEffect(() => {
+    if (fallbackIdx >= urls.length) {
+      fetch(`/api/media?name=${encodeURIComponent(name)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.imageUrl) {
+            setImgSrc(data.imageUrl)
+            setHasVideo(!!data.videoUrl)
+          } else {
+            setImgSrc(null)
+          }
+        })
+        .catch(() => setImgSrc(null))
+    }
+  }, [fallbackIdx, urls.length, name])
 
   // eslint-disable-next-line @next/next/no-img-element
   return imgSrc ? (

@@ -4,14 +4,15 @@ import fs from "fs";
 import path from "path";
 
 const RAPIDAPI_HOST = "edb-with-videos-and-images-by-ascendapi.p.rapidapi.com";
-const SEARCH_URL = `https://${RAPIDAPI_HOST}/api/v1/exercises/search`;
+const BASE_URL = `https://${RAPIDAPI_HOST}/api/v1`;
+const SEARCH_URL = `${BASE_URL}/exercises/search`;
 const CACHE_PATH = path.join(process.cwd(), "public", "data", "exercisedb-cache.json");
 
 interface MediaCache {
   [name: string]: MediaResult | null;
 }
 
-interface MediaResult {
+export interface MediaResult {
   imageUrl: string;
   videoUrl?: string;
 }
@@ -73,8 +74,25 @@ export async function searchExerciseMedia(
     const best = items[0];
     const result: MediaResult = {
       imageUrl: best.imageUrl || "",
-      videoUrl: best.videoUrl || undefined,
     };
+    if (best.exerciseId) {
+      try {
+        const detailUrl = `${BASE_URL}/exercises/${best.exerciseId}`;
+        const detailRes = await fetch(detailUrl, {
+          headers: {
+            "X-RapidAPI-Key": apiKey,
+            "X-RapidAPI-Host": RAPIDAPI_HOST,
+          },
+          next: { revalidate: 86400 },
+        });
+        if (detailRes.ok) {
+          const detailBody = await detailRes.json();
+          const detail = detailBody?.data;
+          if (detail?.videoUrl) result.videoUrl = detail.videoUrl;
+          if (detail?.imageUrls?.["480p"]) result.imageUrl = detail.imageUrls["480p"];
+        }
+      } catch {}
+    }
     cache[key] = result;
     saveCache(cache);
     return result;

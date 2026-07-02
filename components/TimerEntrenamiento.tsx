@@ -30,6 +30,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   const [isRunning, setIsRunning] = useState(true)
   const [completed, setCompleted] = useState(false)
   const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [videoSrc, setVideoSrc] = useState<string | null>(null)
 
   const current = ejercicios[currentIndex]
   const next = ejercicios[currentIndex + 1]
@@ -45,8 +46,17 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
   useEffect(() => {
     if (current) {
       goToFase("preparacion", PREP_SECONDS)
-      const urls = getExerciseImageFallbacks(current?.exercise?.name)
+      setVideoSrc(null)
+      const name = current?.exercise?.name
+      const urls = getExerciseImageFallbacks(name)
       setImgSrc(urls[0] || null)
+      fetch(`/api/media?name=${encodeURIComponent(name)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.videoUrl) setVideoSrc(data.videoUrl)
+          else if (data.imageUrl && !urls.length) setImgSrc(data.imageUrl)
+        })
+        .catch(() => {})
     }
   }, [currentIndex, current, goToFase])
 
@@ -134,19 +144,27 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
           ))}
         </div>
 
-        {/* Exercise image */}
+        {/* Exercise image / video */}
         <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-white/5">
-          {imgSrc ? (
+          {videoSrc ? (
+            <video src={videoSrc} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+          ) : imgSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imgSrc}
               alt={current?.exercise?.name}
               className="w-full h-full object-cover"
               onError={() => {
-                const urls = getExerciseImageFallbacks(current?.exercise?.name)
+                const name = current?.exercise?.name
+                const urls = getExerciseImageFallbacks(name)
                 const idx = urls.indexOf(imgSrc)
                 if (idx >= 0 && idx + 1 < urls.length) setImgSrc(urls[idx + 1])
-                else setImgSrc(null)
+                else {
+                  fetch(`/api/media?name=${encodeURIComponent(name)}`)
+                    .then((r) => r.json())
+                    .then((data) => { if (data.imageUrl) setImgSrc(data.imageUrl); else setImgSrc(null) })
+                    .catch(() => setImgSrc(null))
+                }
               }}
             />
           ) : (
