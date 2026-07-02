@@ -135,10 +135,32 @@ const CONDICION_LABELS: Record<string, string> = {
   excelente: "Excelente",
 };
 
+function sampleExercises(
+  ejercicios: Exercise[],
+  max: number
+): Exercise[] {
+  if (ejercicios.length <= max) return ejercicios;
+  const step = Math.floor(ejercicios.length / max);
+  const result: Exercise[] = [];
+  for (let i = 0; i < ejercicios.length && result.length < max; i += step) {
+    result.push(ejercicios[i]);
+  }
+  return result;
+}
+
 function buildPrompt(
   data: RutinaGeneratorForm,
   ejercicios: Exercise[]
 ): string {
+  const selectedExercises = sampleExercises(ejercicios, 80);
+
+  const exercisesTable = selectedExercises
+    .map(
+      (e) =>
+        `- ID: "${e.id}" | ${e.name} | Grupo: ${e.bodyPart} | Equipo: ${e.equipment} | Target: ${e.target}`
+    )
+    .join("\n");
+
   return `Eres un entrenador personal experto y nutricionista. Genera una rutina de ejercicios HIPERPERSONALIZADA basada en los siguientes datos del usuario.
 
 ## DATOS DEL USUARIO
@@ -177,21 +199,24 @@ function buildPrompt(
 
 ## INSTRUCCIONES
 
-1. Los ejercicios deben seleccionarse del siguiente dataset de ${ejercicios.length} ejercicios.
+1. Selecciona EXACTAMENTE 6 ejercicios del dataset listado abajo.
 2. Para cada ejercicio, proporciona series, repeticiones y descanso.
 3. Adapta la intensidad según el nivel, experiencia y condición física del usuario.
 4. Si hay lesiones o condiciones médicas, evita ejercicios que puedan agravarlas.
-5. Distribuye los ejercicios según la frecuencia semanal disponible.
-6. Prioriza los grupos musculares indicados.
-7. Considera el equipo disponible.
+5. Prioriza los grupos musculares indicados.
+6. Considera el equipo disponible.
 
-Responde SOLO con un JSON válido con esta estructura exacta:
+## DATASET DE EJERCICIOS DISPONIBLES (${selectedExercises.length} de ${ejercicios.length} total):
+
+${exercisesTable}
+
+Responde SOLO con un JSON válido con esta estructura exacta, SIN texto adicional:
 {
-  "nombre": "Nombre sugerido para la rutina (máx 60 caracteres, en español)",
+  "nombre": "Nombre creativo para la rutina (máx 60 caracteres, en español)",
   "duracion_minutos": ${DURACION_MIDPOINT[data.duracion_minutos]},
   "ejercicios": [
     {
-      "exerciseId": "id exacto del ejercicio del dataset",
+      "exerciseId": "ID exacto del dataset (ej: 0001)",
       "sets": 3,
       "reps": 12,
       "restSeconds": 60,
@@ -200,7 +225,7 @@ Responde SOLO con un JSON válido con esta estructura exacta:
   ]
 }
 
-Incluye de 4 a 8 ejercicios. Usa SOLO los IDs exactos del dataset proporcionado.`;
+Los IDs deben coincidir EXACTAMENTE con los del dataset listado arriba.`;
 }
 
 export async function generarRutinaConIA(
@@ -240,27 +265,61 @@ export async function generarRutinaConIA(
     throw new Error(`Error DeepSeek API: ${response.statusText}`);
   }
 
-    const json = await response.json();
-    const content = json.choices[0]?.message?.content || "";
+  const json = await response.json();
+  const content = json.choices[0]?.message?.content || "";
 
-  const cleaned = content.replace(/```json/g, "").replace(/```/g, "").trim();
-  const parsed = JSON.parse(cleaned);
+  let parsed: {
+    nombre?: string;
+    duracion_minutos?: number;
+    ejercicios?: Array<{
+      exerciseId: string;
+      name?: string;
+      sets?: number;
+      reps?: number;
+      restSeconds?: number;
+      order?: number;
+    }>;
+  };
+  try {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const cleaned = jsonMatch ? jsonMatch[0] : content;
+    parsed = JSON.parse(cleaned);
+  } catch {
+    throw new Error("La IA no devolvió un JSON válido. Intenta de nuevo.");
+  }
+
+  if (!parsed.ejercicios || !Array.isArray(parsed.ejercicios)) {
+    throw new Error("La IA no generó ejercicios válidos. Intenta de nuevo.");
+  }
 
   const ejerciciosMap = new Map(ejercicios.map((e) => [e.id, e]));
+  const ejerciciosPorNombre = new Map(
+    ejercicios.map((e) => [e.name.toLowerCase().trim(), e])
+  );
 
-  const rutinaEjercicios: RutinaEjercicio[] = parsed.ejercicios
-    .filter((ej: { exerciseId: string }) => ejerciciosMap.has(ej.exerciseId))
-    .map((ej: { exerciseId: string; sets: number; reps: number; restSeconds: number; order: number }) => ({
-      exercise: ejerciciosMap.get(ej.exerciseId)!,
-      sets: ej.sets,
-      reps: ej.reps,
-      restSeconds: ej.restSeconds,
-      order: ej.order,
-    }));
+  const rutinaEjercicios: RutinaEjercicio[] = [];
+
+  for (const ej of parsed.ejercicios) {
+    let exercise = ejerciciosMap.get(ej.exerciseId);
+
+    if (!exercise && ej.name) {
+      exercise = ejerciciosPorNombre.get(ej.name.toLowerCase().trim());
+    }
+
+    if (exercise) {
+      rutinaEjercicios.push({
+        exercise,
+        sets: ej.sets ?? 3,
+        reps: ej.reps ?? 12,
+        restSeconds: ej.restSeconds ?? 60,
+        order: ej.order ?? rutinaEjercicios.length + 1,
+      });
+    }
+  }
 
   return {
-    nombre: parsed.nombre,
-    duracion_minutos: parsed.duracion_minutos,
+    nombre: parsed.nombre || "Rutina personalizada",
+    duracion_minutos: parsed.duracion_minutos || 30,
     ejercicios: rutinaEjercicios,
   };
 }
