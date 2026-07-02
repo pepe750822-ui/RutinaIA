@@ -104,14 +104,8 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
 
             {fase === "ejercicio" ? (
               <>
-                <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden bg-white/5">
-                  {current?.exercise.gifUrl && (
-                    <img
-                      src={current.exercise.gifUrl}
-                      alt={current.exercise.name}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
+                <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden bg-[#00ff88]/10 flex items-center justify-center">
+                  <span className="text-4xl">🏋️</span>
                 </div>
                 <h3 className="text-xl font-bold text-white">
                   {current?.exercise.name}
@@ -158,7 +152,7 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
 
             {fase === "ejercicio" && (
               <p className="text-sm text-white/30">
-                Target: {current?.exercise.target} &middot;{" "}
+                Target: {current?.exercise?.target || current?.exercise?.body_part} &middot;{" "}
                 {current?.exercise.equipment}
               </p>
             )}

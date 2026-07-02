@@ -157,7 +157,7 @@ function buildPrompt(
   const exercisesTable = selectedExercises
     .map(
       (e) =>
-        `- ID: "${e.id}" | ${e.name} | Grupo: ${e.bodyPart} | Equipo: ${e.equipment} | Target: ${e.target}`
+        `- ID: "${e.id}" | ${e.name} | Grupo: ${e.body_part || ""} | Equipo: ${e.equipment || ""} | Target: ${e.target || ""}`
     )
     .join("\n");
 

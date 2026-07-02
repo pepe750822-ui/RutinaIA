@@ -21,22 +21,15 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
       <Card className="overflow-hidden">
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <div className="w-24 h-24 rounded-lg overflow-hidden bg-white/5 shrink-0">
-              {exercise.gifUrl && (
-                <img
-                  src={exercise.gifUrl}
-                  alt={exercise.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              )}
+            <div className="w-24 h-24 rounded-lg overflow-hidden bg-[#00ff88]/10 shrink-0 flex items-center justify-center">
+              <span className="text-2xl">🏋️</span>
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-white font-semibold truncate">
                 {exercise.name}
               </h3>
               <p className="text-sm text-white/50 capitalize mt-1">
-                {exercise.target} &middot; {exercise.equipment}
+                {exercise.target || exercise.body_part} &middot; {exercise.equipment}
               </p>
               <div className="flex gap-4 mt-3">
                 <div className="text-center">

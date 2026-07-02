@@ -1,12 +1,12 @@
 export interface Exercise {
   id: string;
   name: string;
-  bodyPart: string;
+  body_part: string;
   equipment: string;
-  gifUrl: string;
   target: string;
-  secondaryMuscles: string[];
-  instructions: string[];
+  category?: string;
+  instructions?: Record<string, string>;
+  instruction_steps?: Record<string, string[]>;
 }
 
 export interface RutinaEjercicio {
