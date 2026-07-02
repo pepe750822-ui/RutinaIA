@@ -5,7 +5,27 @@ import { filterExercisesByBodyPart, filterExercisesByEquipment } from "@/lib/exe
 
 export async function POST(request: Request) {
   try {
-    const { objetivo, nivel, tiempo, equipo, musculos } = await request.json();
+    const body = await request.json();
+
+    const {
+      objetivo,
+      nivel,
+      experiencia,
+      conocimiento,
+      edad,
+      peso,
+      altura,
+      genero,
+      condicion_fisica,
+      lesiones,
+      condiciones_medicas,
+      frecuencia_semanal,
+      duracion_minutos,
+      horario_preferido,
+      equipo_disponible,
+      grupos_musculares,
+      prioridad_muscular,
+    } = body;
 
     if (!objetivo) {
       return NextResponse.json(
@@ -18,12 +38,18 @@ export async function POST(request: Request) {
 
     let ejerciciosFiltrados = [...todosEjercicios];
 
-    if (equipo && equipo.length > 0) {
-      ejerciciosFiltrados = filterExercisesByEquipment(ejerciciosFiltrados, equipo);
+    if (equipo_disponible && equipo_disponible.length > 0) {
+      ejerciciosFiltrados = filterExercisesByEquipment(
+        ejerciciosFiltrados,
+        equipo_disponible
+      );
     }
 
-    if (musculos && musculos.length > 0) {
-      ejerciciosFiltrados = filterExercisesByBodyPart(ejerciciosFiltrados, musculos);
+    if (grupos_musculares && grupos_musculares.length > 0) {
+      ejerciciosFiltrados = filterExercisesByBodyPart(
+        ejerciciosFiltrados,
+        grupos_musculares
+      );
     }
 
     if (ejerciciosFiltrados.length < 4) {
@@ -31,11 +57,25 @@ export async function POST(request: Request) {
     }
 
     const result = await generarRutinaConIA(
-      objetivo,
-      nivel || "principiante",
-      tiempo || 30,
-      equipo || [],
-      musculos || [],
+      {
+        objetivo,
+        nivel,
+        experiencia,
+        conocimiento,
+        edad,
+        peso,
+        altura,
+        genero,
+        condicion_fisica,
+        lesiones,
+        condiciones_medicas,
+        frecuencia_semanal,
+        duracion_minutos,
+        horario_preferido,
+        equipo_disponible,
+        grupos_musculares,
+        prioridad_muscular,
+      },
       ejerciciosFiltrados
     );
 

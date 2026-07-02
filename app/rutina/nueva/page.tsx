@@ -2,25 +2,14 @@
 
 import { motion } from "framer-motion";
 import RutinaGenerator from "@/components/RutinaGenerator";
+import { RutinaGeneratorForm } from "@/types";
 
 export default function NuevaRutinaPage() {
-  const handleGenerate = async (form: {
-    objetivo: string;
-    nivel: string;
-    tiempo: string;
-    equipo: string;
-    musculos: string;
-  }) => {
+  const handleGenerate = async (form: RutinaGeneratorForm) => {
     const res = await fetch("/api/generar-rutina", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        objetivo: form.objetivo,
-        nivel: form.nivel,
-        tiempo: parseInt(form.tiempo),
-        equipo: form.equipo === "body weight" ? [] : [form.equipo],
-        musculos: form.musculos === "full body" ? [] : [form.musculos],
-      }),
+      body: JSON.stringify(form),
     });
 
     if (!res.ok) {
@@ -40,7 +29,8 @@ export default function NuevaRutinaPage() {
       <div>
         <h1 className="text-3xl font-bold text-white">Nueva rutina</h1>
         <p className="text-white/50 mt-1">
-          Describe tu objetivo y la IA generará una rutina personalizada.
+          Responde las siguientes preguntas y la IA generará una rutina
+          personalizada para ti.
         </p>
       </div>
 
