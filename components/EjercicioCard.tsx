@@ -20,45 +20,51 @@ export default function EjercicioCard({ ejercicio, index }: Props) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
+      transition={{ delay: index * 0.08 }}
     >
       <Card className="overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-[#00ff88]/10 shrink-0 flex items-center justify-center">
-              {imgUrl && !imgError ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imgUrl}
-                  alt={exercise.name}
-                  className="w-full h-full object-cover"
-                  onError={() => setImgError(true)}
-                />
-              ) : (
-                <span className="text-2xl">🏋️</span>
-              )}
+        {/* Full-width image */}
+        <div className="relative w-full h-48 bg-[#00ff88]/5 overflow-hidden flex items-center justify-center">
+          {imgUrl && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imgUrl}
+              alt={exercise.name}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className="text-6xl">🏋️</span>
+          )}
+          <span className="absolute top-2 left-2 text-[9px] font-bold bg-black/60 text-white/60 px-2 py-0.5 rounded uppercase tracking-wider">
+            #{index + 1}
+          </span>
+          <span className="absolute bottom-2 right-2 text-[9px] font-bold bg-black/60 text-white px-2 py-0.5 rounded uppercase tracking-wider">
+            DEMO
+          </span>
+        </div>
+
+        <CardContent className="p-4 space-y-3">
+          <div>
+            <h3 className="text-white font-bold text-lg leading-tight">{exercise.name}</h3>
+            <p className="text-sm text-white/50 capitalize mt-1">
+              {exercise.target || exercise.body_part} · {exercise.equipment}
+            </p>
+          </div>
+
+          {/* Stats chips */}
+          <div className="flex gap-2">
+            <div className="flex-1 bg-white/5 rounded-xl p-3 text-center">
+              <p className="text-[#00ff88] text-xl font-bold">{sets}</p>
+              <p className="text-[9px] text-white/40 uppercase tracking-wider mt-0.5">Series</p>
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-white font-semibold line-clamp-2 sm:truncate sm:line-clamp-none">
-                {exercise.name}
-              </h3>
-              <p className="text-sm text-white/50 capitalize mt-1">
-                {exercise.target || exercise.body_part} &middot; {exercise.equipment}
-              </p>
-              <div className="flex gap-4 mt-3">
-                <div className="text-center">
-                  <p className="text-[#00ff88] text-lg font-bold">{sets}</p>
-                  <p className="text-xs text-white/40">Series</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[#0066ff] text-lg font-bold">{reps}</p>
-                  <p className="text-xs text-white/40">Reps</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-white text-lg font-bold">{restSeconds}s</p>
-                  <p className="text-xs text-white/40">Descanso</p>
-                </div>
-              </div>
+            <div className="flex-1 bg-white/5 rounded-xl p-3 text-center">
+              <p className="text-[#0066ff] text-xl font-bold">{reps}</p>
+              <p className="text-[9px] text-white/40 uppercase tracking-wider mt-0.5">Reps</p>
+            </div>
+            <div className="flex-1 bg-white/5 rounded-xl p-3 text-center">
+              <p className="text-white text-xl font-bold">{restSeconds}s</p>
+              <p className="text-[9px] text-white/40 uppercase tracking-wider mt-0.5">Descanso</p>
             </div>
           </div>
         </CardContent>

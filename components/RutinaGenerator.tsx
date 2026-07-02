@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Dumbbell, Check, ChevronLeft, ChevronRight } from "lucide-react"
+import { Loader2, Dumbbell, Home, Shuffle, ChevronLeft, ChevronRight } from "lucide-react"
 import EjercicioCard from "./EjercicioCard"
 import { RutinaEjercicio, RutinaGeneratorForm } from "@/types"
 
@@ -44,13 +44,13 @@ const defaultForm: RutinaGeneratorForm = {
 }
 
 const sections = [
-  { step: 0, title: "Lugar de entrenamiento", subtitle: "¿Dónde vas a entrenar?" },
-  { step: 1, title: "Objetivos", subtitle: "¿Qué quieres lograr?" },
-  { step: 2, title: "Nivel y experiencia", subtitle: "Cuéntanos tu experiencia" },
-  { step: 3, title: "Datos personales", subtitle: "Información básica" },
-  { step: 4, title: "Condición física", subtitle: "Salud y lesiones" },
-  { step: 5, title: "Preferencias", subtitle: "Disponibilidad y equipo" },
-  { step: 6, title: "Musculatura", subtitle: "Grupos a trabajar" },
+  { step: 0, title: "¿Dónde vas a entrenar?", subtitle: "Configuración Inicial", desc: "Selecciona tu entorno de entrenamiento principal para que la IA adapte los ejercicios a tu equipamiento disponible." },
+  { step: 1, title: "¿Qué quieres lograr?", subtitle: "Objetivos", desc: "Define tu meta principal para que la IA diseñe el programa ideal." },
+  { step: 2, title: "Nivel y experiencia", subtitle: "Tu historial", desc: "Cuéntanos tu experiencia para adaptar la intensidad." },
+  { step: 3, title: "Datos personales", subtitle: "Información básica", desc: "Datos que la IA necesita para personalizar tu rutina." },
+  { step: 4, title: "Condición física", subtitle: "Salud y lesiones", desc: "Importante para evitar lesiones y respetar tus límites." },
+  { step: 5, title: "Preferencias", subtitle: "Disponibilidad y equipo", desc: "Cuándo y cuánto tiempo puedes entrenar." },
+  { step: 6, title: "Musculatura", subtitle: "Grupos a trabajar", desc: "¿Qué partes del cuerpo quieres priorizar?" },
 ]
 
 function OptionGroup({
@@ -69,7 +69,6 @@ function OptionGroup({
       onChange([...selected, value])
     }
   }
-
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((opt) => {
@@ -79,7 +78,7 @@ function OptionGroup({
             key={opt.value}
             type="button"
             onClick={() => toggle(opt.value)}
-            className={`px-3 py-1.5 rounded-lg text-sm border transition-all ${
+            className={`px-3 py-2 rounded-xl text-sm border transition-all min-h-[40px] ${
               isActive
                 ? "bg-[#00ff88]/10 border-[#00ff88] text-[#00ff88]"
                 : "border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -111,7 +110,7 @@ function RadioGroup({
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className={`px-4 py-2 rounded-lg text-sm border transition-all ${
+            className={`px-4 py-2 rounded-xl text-sm border transition-all min-h-[40px] ${
               isActive
                 ? "bg-[#00ff88]/10 border-[#00ff88] text-[#00ff88]"
                 : "border-white/10 text-white/60 hover:border-white/20 hover:text-white/80"
@@ -165,47 +164,72 @@ export default function RutinaGenerator({ onGenerate }: Props) {
     }
   }
 
-  const nextStep = () => {
-    if (step < 6) setStep((s) => s + 1)
-    else handleSubmit()
-  }
-
-  const prevStep = () => {
-    if (step > 0) setStep((s) => s - 1)
-  }
+  const nextStep = () => { if (step < 6) setStep((s) => s + 1); else handleSubmit() }
+  const prevStep = () => { if (step > 0) setStep((s) => s - 1) }
 
   const renderStep = () => {
     switch (step) {
-      case 0:
+      case 0: {
+        const lugarOpts = [
+          { value: "gimnasio", icon: <Dumbbell className="w-7 h-7 text-[#00ff88]" />, label: "Gimnasio", desc: "Acceso a máquinas y pesas" },
+          { value: "casa", icon: <Home className="w-7 h-7 text-[#00ff88]" />, label: "Casa", desc: "Sin equipo o limitado" },
+          { value: "ambos", icon: <Shuffle className="w-7 h-7 text-[#00ff88]" />, label: "Ambos", desc: "Combinación flexible" },
+        ]
         return (
-          <div className="space-y-6">
-            <RadioGroup
-              options={[
-                { value: "gimnasio", label: "🏋️ Gimnasio" },
-                { value: "casa", label: "🏠 Casa" },
-                { value: "ambos", label: "🔄 Ambos" },
-              ]}
-              value={form.lugar}
-              onChange={(v) => update("lugar", v as RutinaGeneratorForm["lugar"])}
-            />
+          <div className="space-y-3">
+            {lugarOpts.map((opt) => {
+              const isActive = form.lugar === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => update("lugar", opt.value as RutinaGeneratorForm["lugar"])}
+                  className={`w-full p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 text-center ${
+                    isActive ? "border-[#00ff88] bg-[#00ff88]/10" : "border-white/10 bg-white/5 hover:border-white/20"
+                  }`}
+                >
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${isActive ? "bg-[#00ff88]/20" : "bg-white/5"}`}>
+                    {opt.icon}
+                  </div>
+                  <div>
+                    <p className={`font-bold text-lg transition-colors ${isActive ? "text-[#00ff88]" : "text-white"}`}>{opt.label}</p>
+                    <p className="text-white/50 text-sm mt-0.5">{opt.desc}</p>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         )
+      }
 
-      case 1:
+      case 1: {
+        const objetivoOpts = [
+          { value: "perder_peso", emoji: "🔥", label: "Perder peso" },
+          { value: "mejorar_condicion", emoji: "💪", label: "Mejorar condición" },
+          { value: "ganar_muscular", emoji: "🏋️", label: "Ganar masa muscular" },
+          { value: "mantener", emoji: "🧘", label: "Mantenerme" },
+        ]
         return (
-          <div className="space-y-6">
-            <RadioGroup
-              options={[
-                { value: "perder_peso", label: "🔥 Perder peso" },
-                { value: "mejorar_condicion", label: "💪 Mejorar condición" },
-                { value: "ganar_muscular", label: "🏋️ Ganar masa muscular" },
-                { value: "mantener", label: "🧘 Mantenerme en forma" },
-              ]}
-              value={form.objetivo}
-              onChange={(v) => update("objetivo", v as RutinaGeneratorForm["objetivo"])}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            {objetivoOpts.map((opt) => {
+              const isActive = form.objetivo === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => update("objetivo", opt.value as RutinaGeneratorForm["objetivo"])}
+                  className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 text-center min-h-[110px] justify-center ${
+                    isActive ? "border-[#00ff88] bg-[#00ff88]/10" : "border-white/10 bg-white/5 hover:border-white/20"
+                  }`}
+                >
+                  <span className="text-3xl">{opt.emoji}</span>
+                  <p className={`text-sm font-semibold transition-colors ${isActive ? "text-[#00ff88]" : "text-white"}`}>{opt.label}</p>
+                </button>
+              )
+            })}
           </div>
         )
+      }
 
       case 2:
         return (
@@ -469,48 +493,29 @@ export default function RutinaGenerator({ onGenerate }: Props) {
     <div className="space-y-8">
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-8">
-            {sections.map((s, i) => (
-              <div key={s.step} className="flex items-center">
-                <button
-                  onClick={() => i < step && setStep(i)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    i < step
-                      ? "bg-[#00ff88] text-[#0a0f1e] cursor-pointer"
-                      : i === step
-                      ? "bg-[#00ff88]/20 text-[#00ff88] border border-[#00ff88]"
-                      : "bg-white/5 text-white/30"
-                  }`}
-                >
-                  {i < step ? <Check className="w-4 h-4" /> : s.step + 1}
-                </button>
-                {i < sections.length - 1 && (
-                  <div
-                    className={`h-0.5 w-full min-w-[12px] mx-1 ${
-                      i < step ? "bg-[#00ff88]" : "bg-white/10"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
+          {/* Step header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold text-[#00ff88] uppercase tracking-wider">
+                Paso {step + 1} de {sections.length}
+              </span>
+              <span className="text-xs text-white/40">{sections[step].subtitle}</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#00ff88] transition-all duration-500 rounded-full"
+                style={{ width: `${((step + 1) / sections.length) * 100}%` }}
+              />
+            </div>
           </div>
 
-          <div className="w-full h-1 bg-white/5 rounded-full mb-8 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#00ff88] to-[#0066ff] transition-all duration-500 rounded-full"
-              style={{ width: `${((step + 1) / sections.length) * 100}%` }}
-            />
+          {/* Step title */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-white">{sections[step].title}</h2>
+            <p className="text-sm text-white/50 mt-2 max-w-xs mx-auto">{sections[step].desc}</p>
           </div>
 
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white">
-              {sections[step].title}
-            </h2>
-            <p className="text-sm text-white/50 mt-1">
-              {sections[step].subtitle}
-            </p>
-          </div>
-
+          {/* Step content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -524,44 +529,40 @@ export default function RutinaGenerator({ onGenerate }: Props) {
           </AnimatePresence>
 
           {error && (
-            <p className="text-sm text-red-400 mt-4">{error}</p>
+            <p className="text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-4 py-2.5 mt-4">
+              {error}
+            </p>
           )}
 
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5">
+          {/* Navigation */}
+          <div className="flex items-center gap-3 mt-8 pt-6 border-t border-white/5">
             <Button
               variant="ghost"
               onClick={prevStep}
               disabled={step === 0}
+              className="flex-1 h-12 rounded-full gap-2 text-white/60"
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
+              <ChevronLeft className="w-4 h-4" />
               Anterior
             </Button>
-
             <Button
               onClick={nextStep}
               disabled={loading || !canProceed()}
+              className="flex-1 h-12 rounded-full bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold gap-2 disabled:opacity-40"
             >
               {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generando...
-                </>
+                <><Loader2 className="w-4 h-4 animate-spin" />Generando...</>
               ) : step === sections.length - 1 ? (
-                <>
-                  <Dumbbell className="w-4 h-4 mr-2" />
-                  Generar rutina con IA
-                </>
+                <><Dumbbell className="w-4 h-4" />Generar rutina</>
               ) : (
-                <>
-                  Siguiente
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </>
+                <>Siguiente<ChevronRight className="w-4 h-4" /></>
               )}
             </Button>
           </div>
         </CardContent>
       </Card>
 
+      {/* Result */}
       {rutina && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -570,22 +571,25 @@ export default function RutinaGenerator({ onGenerate }: Props) {
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00ff88]/10 text-[#00ff88] border border-[#00ff88]/20 uppercase tracking-wider">
+                  AI-GENERATED
+                </span>
+              </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white">{rutina.nombre}</h2>
-              <p className="text-white/50 text-sm">
-                Duración: {rutina.duracion_minutos} min &middot;{" "}
-                {rutina.ejercicios.length} ejercicios
+              <p className="text-white/50 text-sm mt-0.5">
+                {rutina.duracion_minutos} min · {rutina.ejercicios.length} ejercicios
               </p>
             </div>
             <Button
-              variant="outline"
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto rounded-xl bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold"
               onClick={() => rutina?.id && router.push(`/rutina/${rutina.id}`)}
             >
               {rutina?.id ? "Ver rutina guardada" : "Guardar rutina"}
             </Button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {rutina.ejercicios.map((ej, i) => (
               <EjercicioCard key={ej.exercise.id} ejercicio={ej} index={i} />
             ))}

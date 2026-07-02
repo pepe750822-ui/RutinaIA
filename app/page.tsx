@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dumbbell, Sparkles, BarChart3, Zap, Check } from "lucide-react";
+import { Dumbbell, Sparkles, BarChart3, Zap, Check, Cpu } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const fadeUp = {
@@ -18,51 +18,51 @@ const fadeUp = {
 
 const features = [
   {
-    icon: Sparkles,
-    title: "Rutinas personalizadas",
-    desc: "La IA analiza tu objetivo y genera la rutina perfecta para ti.",
+    icon: Cpu,
+    title: "Algoritmo Adaptativo",
+    desc: "RutinaIA analiza tu fatiga y rendimiento para ajustar el peso y repeticiones de tu próxima sesión.",
   },
   {
     icon: Dumbbell,
     title: "1,324 ejercicios",
-    desc: "Extenso dataset con ejercicios animados y explicaciones detalladas.",
+    desc: "Extenso dataset con ejercicios animados y explicaciones detalladas para cada movimiento.",
   },
   {
     icon: BarChart3,
-    title: "Seguimiento de progreso",
-    desc: "Lleva el control de tus entrenamientos y mejora cada día.",
+    title: "Métricas en Vivo",
+    desc: "Visualiza tu progreso con gráficos de alta fidelidad. Seguimiento de volumen, PRs y consistencia.",
   },
 ];
 
 const plans = [
   {
-    name: "Gratis",
+    name: "Esencial",
     price: "$0",
     desc: "Para empezar tu transformación",
     features: [
-      "3 rutinas por semana",
-      "Ejercicios básicos",
-      "Acceso al gimnasio virtual",
+      "3 rutinas base semanales",
+      "Registro de ejercicios",
+      "IA Adaptativa básica",
       "Soporte por email",
     ],
-    cta: "Empezar gratis",
+    cta: "Empezar Gratis",
     href: "/app",
     featured: false,
   },
   {
-    name: "Premium",
+    name: "Atleta Pro",
     price: "$99",
     period: "/mes",
     desc: "Para los que van en serio",
     features: [
+      "IA Adaptativa en tiempo real",
+      "Planes nutricionales dinámicos",
+      "Soporte prioritario 24/7",
+      "Análisis biomecánico por cámara",
       "Rutinas ilimitadas",
-      "Personalización avanzada",
-      "Seguimiento de progreso",
-      "Timer de entrenamiento",
       "Estadísticas detalladas",
-      "Soporte prioritario",
     ],
-    cta: "Ir a Premium",
+    cta: "Suscribirse Ahora",
     href: "/app",
     featured: true,
   },
@@ -101,10 +101,10 @@ export default function LandingPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00ff88]/20 bg-[#00ff88]/5 text-[#00ff88] text-sm mb-8"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#00ff88]/20 bg-[#00ff88]/5 text-[#00ff88] text-xs font-bold uppercase tracking-widest mb-8"
           >
-            <Zap className="w-4 h-4" />
-            Potenciado por IA
+            <Zap className="w-3.5 h-3.5" />
+            Impulsado por Inteligencia Artificial
           </motion.div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
@@ -113,8 +113,9 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-10">
-            Describe tu objetivo y deja que la inteligencia artificial genere la
-            rutina de ejercicios perfecta para ti.
+            Algoritmos de vanguardia que diseñan rutinas de entrenamiento adaptativas
+            basadas en tu biometría, objetivos y progreso en tiempo real. Entrena como
+            un profesional.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -193,8 +194,8 @@ export default function LandingPage() {
                   }`}
                 >
                   {plan.featured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#00ff88] text-[#0a0f1e] text-xs font-bold rounded-full">
-                      MÁS POPULAR
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#00ff88] text-[#0a0f1e] text-xs font-bold rounded-full uppercase tracking-wider">
+                      RECOMENDADO
                     </div>
                   )}
                   <CardHeader>
@@ -233,6 +234,32 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* CTA Final */}
+      <section className="py-24 px-4">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            {...fadeUp}
+            className="text-center bg-gradient-to-br from-[#00ff88]/10 to-[#0066ff]/5 border border-[#00ff88]/20 rounded-3xl p-10 sm:p-14"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+              ¿Listo para transformar
+              <br />
+              <span className="text-[#00ff88]">tu cuerpo?</span>
+            </h2>
+            <p className="text-white/50 mb-8 max-w-md mx-auto">
+              Únete a más de 50,000 atletas que ya están usando RutinaIA para superar sus límites.
+            </p>
+            <Button
+              size="lg"
+              onClick={handleCTA}
+              className="text-lg px-10 h-14 rounded-full bg-[#00ff88] text-[#0a0f1e] hover:bg-[#00ff88]/90 font-bold uppercase tracking-wide"
+            >
+              CREAR MI CUENTA
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-white/5 py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -243,6 +270,11 @@ export default function LandingPage() {
           <p className="text-sm text-white/30">
             &copy; {new Date().getFullYear()} RutinaIA. Todos los derechos reservados.
           </p>
+          <div className="flex items-center gap-4 text-xs text-white/30">
+            <a href="#" className="hover:text-white/60 transition-colors">Privacidad</a>
+            <a href="#" className="hover:text-white/60 transition-colors">Términos</a>
+            <a href="#" className="hover:text-white/60 transition-colors">Soporte</a>
+          </div>
         </div>
       </footer>
     </>
