@@ -1,32 +1,45 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { generarRutinaConIA } from "@/lib/deepseek";
 import { getAllExercises } from "@/lib/exercises";
 import { filterExercisesByBodyPart, filterExercisesByEquipment } from "@/lib/exercises";
 import { checkWeeklyLimit, incrementWeeklyCount } from "@/lib/premium";
 
+async function getSupabaseAuth() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) return { supabase: null, user: null };
+
+  const cookieStore = await cookies();
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll() {},
+    },
+  });
+
+  const { data: { user } } = await supabase.auth.getUser();
+  return { supabase, user };
+}
+
 export async function POST(request: Request) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const { supabase, user } = await getSupabaseAuth();
 
-    if (supabaseUrl && supabaseKey) {
-      const supabase = createServerClient(supabaseUrl, supabaseKey, {
-        cookies: {
-          getAll: () => [],
-          setAll: () => {},
-        },
-      });
-
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
+    if (!user) {
+      const hasSupabase = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (hasSupabase) {
         return NextResponse.json(
           { error: "Debes iniciar sesión para generar una rutina" },
           { status: 401 }
         );
       }
+    }
 
+    if (user) {
       const limit = await checkWeeklyLimit(user.id);
       if (!limit.allowed) {
         return NextResponse.json(
@@ -117,36 +130,25 @@ export async function POST(request: Request) {
 
     let rutinaId: string | undefined;
 
-    if (supabaseUrl && supabaseKey) {
-      const supabase = createServerClient(supabaseUrl, supabaseKey, {
-        cookies: {
-          getAll: () => [],
-          setAll: () => {},
-        },
-      });
+    if (supabase && user) {
+      const { data: rutina, error } = await supabase
+        .from("rutinas")
+        .insert({
+          user_id: user.id,
+          nombre: result.nombre,
+          objetivo,
+          nivel,
+          ejercicios: result.ejercicios,
+          duracion_minutos: result.duracion_minutos,
+        })
+        .select("id")
+        .single();
 
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: rutina, error } = await supabase
-          .from("rutinas")
-          .insert({
-            user_id: user.id,
-            nombre: result.nombre,
-            objetivo,
-            nivel,
-            ejercicios: result.ejercicios,
-            duracion_minutos: result.duracion_minutos,
-          })
-          .select("id")
-          .single();
-
-        if (!error && rutina) {
-          rutinaId = rutina.id;
-        }
-
-        await incrementWeeklyCount(user.id);
+      if (!error && rutina) {
+        rutinaId = rutina.id;
       }
+
+      await incrementWeeklyCount(user.id);
     }
 
     return NextResponse.json({ ...result, id: rutinaId });
