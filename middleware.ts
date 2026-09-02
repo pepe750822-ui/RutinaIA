@@ -32,15 +32,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname.startsWith("/app")
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
-  }
+  // Auth check temporarily disabled for UI preview — re-enable before production
+  // if (
+  //   !user &&
+  //   !request.nextUrl.pathname.startsWith("/auth") &&
+  //   request.nextUrl.pathname.startsWith("/app")
+  // ) {
+  //   const url = request.nextUrl.clone();
+  //   url.pathname = "/";
+  //   return NextResponse.redirect(url);
+  // }
 
   return supabaseResponse;
 }

@@ -31,10 +31,16 @@ const weekStart = () => {
 const DIAS = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
 
 export default function DashboardPage() {
-  const [nombre, setNombre] = useState("Atleta");
-  const [stats, setStats] = useState({ kcal: 0, minSemana: 0, racha: 0, sesiones: 0 });
-  const [rutinas, setRutinas] = useState<RutinaRow[]>([]);
-  const [prs, setPrs] = useState<{ nombre: string; peso: number }[]>([]);
+  const [nombre, setNombre] = useState("José Luis");
+  const [stats, setStats] = useState({ kcal: 486, minSemana: 38, racha: 12, sesiones: 3 });
+  const [rutinas, setRutinas] = useState<RutinaRow[]>([
+    { id: 'mock-1', nombre: 'Potencia de Empuje', duracion_minutos: 42, ejercicios: [{ exercise: { name: 'Press de banca' } }], created_at: new Date().toISOString(), objetivo: 'ganar_muscular', nivel: 'intermedio' },
+  ]);
+  const [prs, setPrs] = useState<{ nombre: string; peso: number }[]>([
+    { nombre: 'Press de banca', peso: 80 },
+    { nombre: 'Sentadilla', peso: 100 },
+    { nombre: 'Peso muerto', peso: 120 },
+  ]);
 
   const now = new Date();
   const diasLabel = DIAS[now.getDay()];

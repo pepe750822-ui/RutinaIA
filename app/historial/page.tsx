@@ -24,9 +24,21 @@ function buildCalendar(year: number, month: number) {
   return { offset, daysInMonth };
 }
 
+const mockSesiones = (): Sesion[] => {
+  const today = new Date();
+  return [0, 1, 3, 5, 7, 8, 10].map((daysAgo, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - daysAgo);
+    d.setHours(18, 30, 0, 0);
+    return { id: `mock-${i}`, duracion_min: [52, 48, 61, 44, 58, 39, 55][i], created_at: d.toISOString() };
+  });
+};
+
 export default function HistorialPage() {
-  const [sesiones, setSesiones] = useState<Sesion[]>([]);
-  const [trainedDays, setTrainedDays] = useState<Set<string>>(new Set());
+  const mock = mockSesiones();
+  const mockDays = new Set(mock.map((s) => s.created_at.split("T")[0]));
+  const [sesiones, setSesiones] = useState<Sesion[]>(mock);
+  const [trainedDays, setTrainedDays] = useState<Set<string>>(mockDays);
   const [calDate, setCalDate] = useState(() => {
     const d = new Date();
     return { year: d.getFullYear(), month: d.getMonth() };
