@@ -10,7 +10,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase"
 const links = [
   { href: "/app", label: "Dashboard", icon: Home },
   { href: "/rutina/nueva", label: "Nueva rutina", icon: Sparkles },
-  { href: "/app?tab=historial", label: "Historial", icon: History },
+  { href: "/historial", label: "Historial", icon: History },
   { href: "/perfil", label: "Perfil", icon: User },
 ]
 

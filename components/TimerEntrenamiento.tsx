@@ -579,7 +579,8 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
 
   // ── RUTINA (ejercicios) ────────────────────────────────────────────────
   const isLogPhase = fase === "registro"
-  const rutinaTimerColor = fase === "descanso" ? "#0066ff" : "#00ff88"
+  const isDescanso = fase === "descanso"
+  const rutinaTimerColor = isDescanso ? "#CCFF00" : "#39FF14"
 
   return (
     <AnimatePresence mode="wait">
@@ -588,32 +589,30 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="space-y-5"
+        className="space-y-4"
       >
-        {/* Session progress */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-white/50 uppercase tracking-wider">Progreso de Sesión</span>
-            <span className="text-xs font-bold text-white">{currentIndex + 1} / {total}</span>
+        {/* Header: rutina name + progress */}
+        <div className="rounded-2xl px-4 py-3" style={{ background: "#0d0d0d", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: isDescanso ? "#CCFF00" : "#39FF14" }}>
+              {isDescanso ? "TEMPORIZADOR DE DESCANSO" : "EJERCICIO ACTUAL"}
+            </span>
+            <span
+              className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded"
+              style={{ background: "rgba(57,255,20,0.1)", color: "#39FF14", border: "1px solid rgba(57,255,20,0.25)" }}
+            >
+              SERIE {setsLog.length + 1} / {current?.sets ?? 3}
+            </span>
           </div>
-          <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#00ff88] transition-all duration-500 rounded-full"
-              style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Phase tabs */}
-        <div className="flex items-center justify-center gap-8">
-          {(["preparacion", "ejercicio", "registro", "descanso"] as Fase[]).map((f) => (
-            <div key={f} className="flex flex-col items-center gap-1">
-              <span className={`text-xs font-medium transition-colors ${fase === f ? "text-[#00ff88]" : "text-white/30"}`}>
-                {FASE_LABEL[f]}
-              </span>
-              <div className={`w-1.5 h-1.5 rounded-full transition-all ${fase === f ? "bg-[#00ff88]" : "bg-transparent"}`} />
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-full h-1 rounded-full" style={{ background: "rgba(255,255,255,0.07)" }}>
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${((currentIndex + 1) / total) * 100}%`, background: "#39FF14" }}
+              />
             </div>
-          ))}
+            <span className="text-[10px] font-bold text-white/40 ml-3 shrink-0">{currentIndex + 1}/{total}</span>
+          </div>
         </div>
 
         {/* Exercise image / video */}
@@ -743,17 +742,39 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
           </motion.div>
         ) : (
           <>
+            {/* Exercise info */}
+            <div className="rounded-2xl p-4 mb-4" style={{ background: "#0d0d0d", border: "1px solid rgba(57,255,20,0.2)" }}>
+              <p className="text-[9px] uppercase tracking-widest text-white/30 mb-0.5">
+                EJERCICIO ACTUAL
+              </p>
+              <h3 className="text-2xl font-black uppercase tracking-tight text-white leading-tight mb-3">
+                {current?.exercise?.name}
+              </h3>
+              <div className="grid grid-cols-2 divide-x divide-white/[0.06]">
+                <div className="pr-4">
+                  <p className="text-3xl font-black leading-none" style={{ color: "#39FF14" }}>{current?.reps ?? 12}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-white/40 mt-1">REPETICIONES</p>
+                </div>
+                <div className="pl-4">
+                  <p className="text-3xl font-black leading-none text-white">{setsLog[setsLog.length - 1]?.peso ?? 0} <span className="text-base text-white/40">KG</span></p>
+                  <p className="text-[9px] uppercase tracking-widest text-white/40 mt-1">CARGA OBJETIVO</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Timer circle */}
             <div className="flex items-center justify-center">
               <div className="relative w-[200px] h-[200px]">
+                <div className="absolute inset-0 rounded-full" style={{ background: "rgba(10,10,10,0.9)", border: "1px solid rgba(255,255,255,0.06)" }} />
                 <svg width="200" height="200" viewBox="0 0 200 200" className="-rotate-90 absolute inset-0">
-                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="10" />
-                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke={rutinaTimerColor} strokeWidth="10"
+                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                  <circle cx="100" cy="100" r={RADIUS} fill="none" stroke={rutinaTimerColor} strokeWidth="8"
                     strokeLinecap="round" strokeDasharray={CIRCUMFERENCE} strokeDashoffset={dashOffset}
                     className="transition-all duration-1000"
-                    style={{ filter: `drop-shadow(0 0 10px ${rutinaTimerColor}80)` }} />
+                    style={{ filter: `drop-shadow(0 0 12px ${rutinaTimerColor}60)` }} />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-bold tabular-nums" style={{ color: rutinaTimerColor }}>
+                  <span className="text-4xl font-black tabular-nums" style={{ color: rutinaTimerColor }}>
                     {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
                   </span>
                   <span className="text-[9px] text-white/40 uppercase tracking-widest mt-1">
@@ -762,53 +783,50 @@ export default function TimerEntrenamiento({ ejercicios, onComplete }: Props) {
                 </div>
               </div>
             </div>
-
-            <div className="text-center space-y-1">
-              <h3 className="text-xl font-bold text-white">{current?.exercise?.name}</h3>
-              <p className="text-sm text-white/50">
-                {current?.sets} series · {current?.reps} reps · {current?.restSeconds}s descanso
-              </p>
-              {setsLog.length > 0 && (
-                <p className="text-xs text-[#00ff88]">
-                  {setsLog.length}/{current?.sets} series registradas
-                </p>
-              )}
-            </div>
           </>
         )}
 
-        <div className="flex items-center justify-center gap-4 pb-2">
-          <Button
-            variant="outline"
-            size="icon"
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-3 pb-2">
+          <button
             onClick={skipBack}
             disabled={currentIndex === 0 || isLogPhase}
-            className="w-12 h-12 rounded-full border-white/10 hover:border-white/30"
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all disabled:opacity-30"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
           >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
+            <ChevronLeft className="w-5 h-5 text-white/60" />
+          </button>
+          <button
             onClick={() => setIsRunning((p) => !p)}
             disabled={isLogPhase}
-            className="w-16 h-16 rounded-full border-[#00ff88]/30 bg-[#00ff88]/10 hover:bg-[#00ff88]/20"
+            className="w-16 h-16 rounded-full flex items-center justify-center transition-all disabled:opacity-30"
+            style={{ background: "rgba(57,255,20,0.15)", border: "1px solid rgba(57,255,20,0.4)" }}
           >
             {isRunning
-              ? <Pause className="w-6 h-6 text-[#00ff88]" />
-              : <Play className="w-6 h-6 text-[#00ff88]" />
+              ? <Pause className="w-6 h-6" style={{ color: "#39FF14" }} />
+              : <Play className="w-6 h-6 ml-0.5" style={{ color: "#39FF14" }} />
             }
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
+          </button>
+          <button
             onClick={skip}
             disabled={isLogPhase}
-            className="w-12 h-12 rounded-full border-white/10 hover:border-white/30"
+            className="w-12 h-12 rounded-full flex items-center justify-center transition-all disabled:opacity-30"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
           >
-            <SkipForward className="w-5 h-5" />
-          </Button>
+            <SkipForward className="w-5 h-5 text-white/60" />
+          </button>
         </div>
+
+        {/* Siguiente ejercicio button */}
+        {!isLogPhase && (
+          <button
+            onClick={skip}
+            className="w-full h-14 rounded-2xl font-black text-base uppercase tracking-widest transition-all active:scale-95"
+            style={{ background: "#39FF14", color: "#0a0a0a" }}
+          >
+            {currentIndex + 1 >= total ? "FINALIZAR RUTINA" : "SIGUIENTE EJERCICIO →"}
+          </button>
+        )}
       </motion.div>
     </AnimatePresence>
   )
