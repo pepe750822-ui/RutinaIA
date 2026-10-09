@@ -16,7 +16,7 @@ const schema = z.object({
   CRON_SECRET: z.string().min(1),
 
   // Step 5
-  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_API_KEY: z.string().min(1),
 
   // Step 6
   STRIPE_SECRET_KEY: z.string().optional(),
