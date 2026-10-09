@@ -1,7 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function RootPage() {
+export default async function StudentLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,5 +25,5 @@ export default async function RootPage() {
     redirect("/instructor");
   }
 
-  redirect("/dashboard");
+  return <>{children}</>;
 }
