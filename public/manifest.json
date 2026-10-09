@@ -1,12 +1,14 @@
 {
-  "name": "RutinaIA",
+  "name": "RutinaIA Nutrición",
   "short_name": "RutinaIA",
-  "description": "Módulo de nutrición inteligente para gimnasios",
-  "start_url": "/",
+  "description": "Registra tus comidas con IA y alcanza tus metas nutricionales",
+  "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#16A34A",
   "background_color": "#F8FAFC",
+  "lang": "es-MX",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -20,5 +22,16 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard de nutrición"
+    }
+  ],
+  "categories": ["health", "fitness"],
+  "prefer_related_applications": false
 }
