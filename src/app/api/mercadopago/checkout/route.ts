@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
-        transaction_amount: 299,
+        transaction_amount: 110,
         currency_id: "MXN",
       },
       status: "pending",
