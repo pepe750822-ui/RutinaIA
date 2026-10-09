@@ -4,6 +4,8 @@ import path from "path";
 export default defineConfig({
   test: {
     environment: "node",
+    include: ["tests/**/*.test.ts"],
+    exclude: ["e2e/**"],
     setupFiles: ["./tests/setup.ts"],
     env: {
       NEXT_PUBLIC_APP_URL: "http://localhost:3000",
