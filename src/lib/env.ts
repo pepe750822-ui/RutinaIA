@@ -13,7 +13,7 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1),
 
   // Step 4
-  CRON_SECRET: z.string().optional(),
+  CRON_SECRET: z.string().min(1),
 
   // Step 5
   GEMINI_API_KEY: z.string().optional(),
