@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RutinaIA - Generador de Rutinas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+        .neon-glow-active {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        .progress-gradient {
+            background: linear-gradient(90deg, #0266ff 0%, #00ff88 100%);
+        }
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#001849",
+                        "primary-fixed": "#60ff99",
+                        "tertiary": "#fffaf7",
+                        "secondary-fixed-dim": "#b3c5ff",
+                        "inverse-surface": "#dae6d8",
+                        "on-primary-container": "#007139",
+                        "error": "#ffb4ab",
+                        "secondary": "#b3c5ff",
+                        "inverse-on-surface": "#29332a",
+                        "surface-variant": "#2d372e",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "on-tertiary-fixed": "#241a00",
+                        "secondary-fixed": "#dae1ff",
+                        "on-primary": "#003919",
+                        "background": "#0c160e",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d372e",
+                        "on-secondary": "#002b75",
+                        "on-tertiary": "#3d2f00",
+                        "on-surface-variant": "#b9cbb9",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#00e479",
+                        "on-tertiary-container": "#795f01",
+                        "primary": "#f1ffef",
+                        "on-background": "#dae6d8",
+                        "outline": "#849585",
+                        "on-secondary-fixed-variant": "#003fa4",
+                        "surface-container": "#18221a",
+                        "surface-container-low": "#141e16",
+                        "tertiary-fixed": "#ffe08d",
+                        "outline-variant": "#3b4b3d",
+                        "on-surface": "#dae6d8",
+                        "surface-tint": "#00e479",
+                        "surface-bright": "#323c32",
+                        "surface-container-lowest": "#071009",
+                        "surface": "#0c160e",
+                        "secondary-container": "#0266ff",
+                        "on-primary-fixed-variant": "#005228",
+                        "surface-dim": "#0c160e",
+                        "surface-container-high": "#222c24",
+                        "on-primary-fixed": "#00210c",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#ffdb79",
+                        "primary-container": "#00ff88",
+                        "on-secondary-container": "#f9f7ff",
+                        "inverse-primary": "#006d37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "32px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "sm": "16px",
+                        "xl": "48px",
+                        "xs": "8px",
+                        "md": "24px",
+                        "container-margin": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen flex flex-col">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 28px;">fitness_center</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary-container tracking-tighter">RutinaIA</span>
+</div>
+<div class="flex items-center gap-md">
+<nav class="hidden md:flex gap-md">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-primary-container font-bold" href="#">Routines</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary-fixed transition-colors duration-300" href="#">Stats</a>
+</nav>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-detail portrait of a professional athlete in a dark, high-tech fitness studio. Soft blue and neon green accent lighting highlights the contours of the face and athletic wear. The aesthetic is futuristic and polished, reflecting a high-performance digital sports platform environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm1C84cy9HB9B7HpOOLGlweejv0EbwiiUJKR02XoVboCOmQT-Gu-prGD1wHZeLtawbB5KOciTw_i7uhWGU_lfLvzy5ApCjMJcgx1zz4QouTzV-dngp3Q1KvVE8vSaNSv0olYuA55t39E8gra9o-9dYc1uk6ENHu9YxcpqJogtfCTpCIbsZETaZpRz90vYc90amskZgbLGGEBr0sm2wcxfjxzMgcew4yv4QwA-me86kVKahA3B4blA"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-32 pb-40 px-container-margin relative overflow-hidden">
+<!-- Background Animation Overlay -->
+
+<div class="max-w-4xl mx-auto relative z-10">
+<!-- Progress Bar (7 Steps) -->
+<div class="mb-xl">
+<div class="flex justify-between mb-sm">
+<span class="font-label-md text-label-md text-primary-container uppercase tracking-widest">Paso 1 de 7</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Configuración Inicial</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden flex gap-1">
+<div class="h-full w-[14.28%] progress-gradient rounded-full neon-glow"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+<div class="h-full w-[14.28%] bg-white/5 rounded-full"></div>
+</div>
+</div>
+<!-- Question Card -->
+<div class="glass-card rounded-xl p-lg md:p-xl shadow-2xl">
+<div class="text-center mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-xs">¿Dónde vas a entrenar?</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto">Selecciona tu entorno de entrenamiento principal para que la IA adapte los ejercicios a tu equipamiento disponible.</p>
+</div>
+<!-- Big Button Options -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Option: Gimnasio -->
+<button class="group relative flex flex-col items-center justify-center p-xl rounded-xl glass-card transition-all duration-300 hover:border-primary-container hover:bg-primary-container/5 active:scale-95" onclick="selectOption(this)">
+<div class="mb-md p-md rounded-full bg-surface-container-high group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface text-4xl group-hover:text-primary-container transition-colors">fitness_center</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface group-hover:text-primary-container">Gimnasio</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Acceso a máquinas y pesas</p>
+</button>
+<!-- Option: Casa -->
+<button class="group relative flex flex-col items-center justify-center p-xl rounded-xl glass-card transition-all duration-300 hover:border-primary-container hover:bg-primary-container/5 active:scale-95" onclick="selectOption(this)">
+<div class="mb-md p-md rounded-full bg-surface-container-high group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface text-4xl group-hover:text-primary-container transition-colors">home</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface group-hover:text-primary-container">Casa</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Sin equipo o limitado</p>
+</button>
+<!-- Option: Ambos -->
+<button class="group relative flex flex-col items-center justify-center p-xl rounded-xl glass-card transition-all duration-300 hover:border-primary-container hover:bg-primary-container/5 active:scale-95" onclick="selectOption(this)">
+<div class="mb-md p-md rounded-full bg-surface-container-high group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface text-4xl group-hover:text-primary-container transition-colors">alt_route</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface group-hover:text-primary-container">Ambos</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Combinación flexible</p>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Navigation Actions -->
+<div class="fixed bottom-0 left-0 w-full z-40 bg-background/60 backdrop-blur-lg border-t border-white/10 px-container-margin h-24 flex items-center justify-center">
+<div class="max-w-4xl w-full flex justify-between items-center">
+<button class="flex items-center gap-xs px-md py-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+                Anterior
+            </button>
+<div class="flex gap-md">
+<button class="px-xl py-md rounded-full bg-primary-container text-on-primary-container font-headline-md text-headline-md hover:neon-glow-active transition-all active:scale-95 flex items-center gap-sm">
+                    Siguiente
+                    <span class="material-symbols-outlined">arrow_forward_ios</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Background Decorative Elements -->
+<div class="fixed top-1/4 -right-20 w-80 h-80 bg-primary-container/10 blur-[100px] rounded-full -z-10"></div>
+<div class="fixed bottom-1/4 -left-20 w-96 h-96 bg-secondary-container/10 blur-[100px] rounded-full -z-10"></div>
+<script>
+        function selectOption(btn) {
+            // Remove active classes from all buttons
+            document.querySelectorAll('button').forEach(b => {
+                if (b.classList.contains('glass-card')) {
+                    b.classList.remove('border-primary-container', 'bg-primary-container/10', 'neon-glow');
+                }
+            });
+            // Add active classes to selected button
+            btn.classList.add('border-primary-container', 'bg-primary-container/10', 'neon-glow');
+            
+            // Interaction feedback
+            const icon = btn.querySelector('.material-symbols-outlined');
+            icon.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                icon.style.transform = 'scale(1)';
+            }, 200);
+        }
+    </script>
+</body></html>

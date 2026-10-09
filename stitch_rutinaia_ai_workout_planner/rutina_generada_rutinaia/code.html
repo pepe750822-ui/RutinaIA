@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+        }
+        .neon-border-glow:focus-within {
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        .gradient-progress {
+            background: linear-gradient(90deg, #0266ff 0%, #00ff88 100%);
+        }
+        body {
+            background-color: #0c160e;
+            color: #dae6d8;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#001849",
+                        "primary-fixed": "#60ff99",
+                        "tertiary": "#fffaf7",
+                        "secondary-fixed-dim": "#b3c5ff",
+                        "inverse-surface": "#dae6d8",
+                        "on-primary-container": "#007139",
+                        "error": "#ffb4ab",
+                        "secondary": "#b3c5ff",
+                        "inverse-on-surface": "#29332a",
+                        "surface-variant": "#2d372e",
+                        "on-tertiary-fixed-variant": "#584400",
+                        "on-tertiary-fixed": "#241a00",
+                        "secondary-fixed": "#dae1ff",
+                        "on-primary": "#003919",
+                        "background": "#0c160e",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d372e",
+                        "on-secondary": "#002b75",
+                        "on-tertiary": "#3d2f00",
+                        "on-surface-variant": "#b9cbb9",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#00e479",
+                        "on-tertiary-container": "#795f01",
+                        "primary": "#f1ffef",
+                        "on-background": "#dae6d8",
+                        "outline": "#849585",
+                        "on-secondary-fixed-variant": "#003fa4",
+                        "surface-container": "#18221a",
+                        "surface-container-low": "#141e16",
+                        "tertiary-fixed": "#ffe08d",
+                        "outline-variant": "#3b4b3d",
+                        "on-surface": "#dae6d8",
+                        "surface-tint": "#00e479",
+                        "surface-bright": "#323c32",
+                        "surface-container-lowest": "#071009",
+                        "surface": "#0c160e",
+                        "secondary-container": "#0266ff",
+                        "on-primary-fixed-variant": "#005228",
+                        "surface-dim": "#0c160e",
+                        "surface-container-high": "#222c24",
+                        "on-primary-fixed": "#00210c",
+                        "tertiary-fixed-dim": "#e5c364",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#00ff88",
+                        "on-secondary-container": "#f9f7ff",
+                        "inverse-primary": "#006d37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "32px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "sm": "16px",
+                        "xl": "48px",
+                        "xs": "8px",
+                        "md": "24px",
+                        "container-margin": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Montserrat"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-background min-h-screen pb-32">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-margin h-16 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary-container tracking-tighter">RutinaIA</h1>
+</div>
+<div class="w-10 h-10 rounded-full border border-primary-container/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional athletic profile portrait of a fitness enthusiast, set against a dark, tech-inspired background with subtle neon green backlighting. The lighting is dramatic and high-contrast, emphasizing a futuristic 'Digital Athlete' aesthetic. The composition is a close-up, showcasing a focused and disciplined expression, consistent with a high-performance AI fitness environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPvAJreNwAwkSe6v0EgVmRbMmsVPBv7COn2WbUqM9l9Ze5pUk9MHoPSecAq_FZdYjvruKBz0cSWtG6qslF2-ZcmkDxScoh5huIOojkAw1941Mkwbsg8agtuMmii8qLCEwwZsU9lhOTYGIidC5YOmOAaL0kATde8AEEybWwHHkWEgVgFHo0McpqFaFpgy1091YefYdBd5ERTCTrilBBeNm_oV-eaNzol3j1ddoInfeTL0VNEvlLEOU"/>
+</div>
+</header>
+<main class="pt-24 px-container-margin max-w-4xl mx-auto">
+<!-- Routine Header -->
+<section class="mb-lg">
+<div class="flex items-center gap-xs mb-base">
+<span class="px-3 py-1 rounded-full bg-primary-container/20 text-primary-container font-label-sm text-label-sm uppercase tracking-wider">AI-Generated</span>
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary-fixed font-label-sm text-label-sm uppercase tracking-wider">Hipertrofia</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-xs">Full Body Explosivo</h2>
+<div class="flex items-center gap-md text-on-surface-variant font-body-md text-body-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>55 min</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">local_fire_department</span>
+<span>420 kcal</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">layers</span>
+<span>6 ejercicios</span>
+</div>
+</div>
+</section>
+<!-- Exercise List -->
+<div class="space-y-md">
+<!-- Exercise Card 1 -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md hover:border-primary-container/40 transition-all duration-300 group">
+<div class="w-full md:w-40 h-40 rounded-lg overflow-hidden relative bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A high-quality looping 3D animation of a professional athlete performing a Barbell Bench Press in a futuristic, dark gym setting. The scene is illuminated with neon green accents and soft blue ambient light, emphasizing muscle activation. The style is ultra-modern and instructional, designed for an AI fitness app interface with high-contrast cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw6D0VvR1lsQ1KdjUcVG6o3EUZIG0ivBSexitwbb9Hza6EGDIowpyM7nvDmu6Y7ysbAiqWJ0gptlDva_75Twymn7Ros5_dZZHZE4MmSOTEjqM3v-2JnT_asKrRFooWmkGhU8ngoHxzfnVUdiPXXmnAImDBPnH317NK_j61oI7RMOMlp9pzX1iClRGOR5yu2hUY9fmsCV91P2l16t1rU9z8etO9Udk1Ez68tljl5PYYrREOu71Mzd0"/>
+<div class="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded text-[10px] font-bold text-primary-container uppercase tracking-widest">Demo</div>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Press de Banca</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-container transition-colors">info</span>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md mb-md">Enfoque en pectoral mayor y tríceps.</p>
+</div>
+<div class="grid grid-cols-3 gap-xs">
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Series</p>
+<p class="font-headline-md text-headline-md text-primary-container">4</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Reps</p>
+<p class="font-headline-md text-headline-md text-primary-container">12</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Descanso</p>
+<p class="font-headline-md text-headline-md text-primary-container">90s</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Exercise Card 2 -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md hover:border-primary-container/40 transition-all duration-300 group">
+<div class="w-full md:w-40 h-40 rounded-lg overflow-hidden relative bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A cinematic 3D digital visualization of an athlete performing a Back Squat. The environment is a sleek, dark laboratory-style gym with vibrant neon green floor markings and volumetric lighting effects. The aesthetic is clean and performance-focused, using deep navy surfaces and high-contrast highlights to define the form and movement." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-JXm32BQYF01p9AJV_VYPSohmLi0Zy8mU75jkO9uE9xKeckbK7MxM54N4-3T4o3mRCSmbSHIUmzg-LS1hBPsG8Zfg8EzlZ5INhWmudx0Bal0Yn4GVMkJTW8I6BMxLwoSgTihKP44TYcYRICf6rDdtx6jjDN9ZPju1oalkNoBEP-wp2S-Kctm6SzMoMB1dpPlLaX-zQC-k3xS3ApFsxK71scXmmf8cT21mThPida-1kgqALNAxnyU"/>
+<div class="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded text-[10px] font-bold text-primary-container uppercase tracking-widest">Demo</div>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Sentadilla con Barra</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-container transition-colors">info</span>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md mb-md">Cadenas musculares inferiores completas.</p>
+</div>
+<div class="grid grid-cols-3 gap-xs">
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Series</p>
+<p class="font-headline-md text-headline-md text-primary-container">4</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Reps</p>
+<p class="font-headline-md text-headline-md text-primary-container">10</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Descanso</p>
+<p class="font-headline-md text-headline-md text-primary-container">120s</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Exercise Card 3 -->
+<div class="glass-card rounded-xl p-md flex flex-col md:flex-row gap-md hover:border-primary-container/40 transition-all duration-300 group">
+<div class="w-full md:w-40 h-40 rounded-lg overflow-hidden relative bg-surface-container-highest">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Instructional 3D animation of a Pull-Up movement within a futuristic training hub. The background features glowing data streams and a dark, moody navy palette. The athlete's silhouette is sharp and defined by neon green rim lighting, creating a state-of-the-art urban training atmosphere. The visual focus is on the precision and rhythm of the exercise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcti61_ZG2eQgUimBKKwxMrbCLD-ZxSEbOMebKkSnquenEN5WpkQpEC_dtP3-jbZ_vdJs2DviHA6Jcc4lkfyXsnCgkpx2lj_JWK98gextS3_Pu7JqLCaD4FtdXOF3wJOrOBKySo6wMojVpiKqQiDBwz4bhve9ZsEjpqmtq4gCjk1Mn8GUlGB2Yvwkp0QsUXVzxLZdRU0yNtBr-YelG2IQ-gDjMVm-S5Yy7TuE3lmgC8LrFGfnVYJ0"/>
+<div class="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded text-[10px] font-bold text-primary-container uppercase tracking-widest">Demo</div>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Dominadas</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-container transition-colors">info</span>
+</div>
+<p class="text-on-surface-variant font-body-md text-body-md mb-md">Tracción vertical para desarrollo de espalda.</p>
+</div>
+<div class="grid grid-cols-3 gap-xs">
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Series</p>
+<p class="font-headline-md text-headline-md text-primary-container">3</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Reps</p>
+<p class="font-headline-md text-headline-md text-primary-container">al fallo</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-white/5">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold mb-1">Descanso</p>
+<p class="font-headline-md text-headline-md text-primary-container">90s</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-background/40 backdrop-blur-lg border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.5)] md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary-container bg-primary-container/10 rounded-xl px-4 py-1 shadow-[0_0_10px_rgba(0,255,136,0.3)]" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-sm text-label-sm">Routines</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 hover:opacity-100 transition-opacity" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Large CTA Button at bottom -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-md px-container-margin z-40">
+<button class="w-full h-16 bg-primary-container text-on-primary-container font-headline-md text-headline-md rounded-full shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined font-bold group-hover:animate-pulse">play_arrow</span>
+<span>Iniciar entrenamiento</span>
+</button>
+</div>
+<script>
+        // Simple scroll interaction for header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-background/95');
+                header.classList.remove('bg-background/80');
+            } else {
+                header.classList.add('bg-background/80');
+                header.classList.remove('bg-background/95');
+            }
+        });
+
+        // Micro-interaction for CTA button
+        const cta = document.querySelector('button');
+        cta.addEventListener('mousedown', () => {
+            cta.classList.add('shadow-[0_0_40px_rgba(0,255,136,0.6)]');
+        });
+        cta.addEventListener('mouseup', () => {
+            cta.classList.remove('shadow-[0_0_40px_rgba(0,255,136,0.6)]');
+        });
+    </script>
+</body></html>

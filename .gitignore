@@ -30,12 +30,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files — real values never committed
+# env files (can opt-in for committing if needed)
 .env*
-!.env.example
-
-# .claude directory is committed (settings.json, rules/)
-# (no exclusion needed — files are added explicitly)
 
 # vercel
 .vercel
@@ -43,3 +39,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

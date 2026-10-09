@@ -1,0 +1,1 @@
+ALTER TABLE rutinas ADD COLUMN dias JSONB;
